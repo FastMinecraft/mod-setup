@@ -51,8 +51,8 @@ parent!!.afterEvaluate {
         thisProject.tasks {
             remapJar {
                 archiveClassifier.set("unpatched")
-                create("atPatch", AtPatchTask::class.java, patches, this)
             }
+            create("atPatch", AtPatchTask::class.java, patches, remapJar.get())
         }
     }
 }
