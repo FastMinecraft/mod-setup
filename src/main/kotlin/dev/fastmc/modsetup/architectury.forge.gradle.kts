@@ -27,8 +27,8 @@ loom.forge {
 }
 
 afterEvaluate {
-    loom.forge {
-        extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
+    loom.accessWidenerPath.orNull?.let {
+        loom.forge.extraAccessWideners.add(it.asFile.name)
     }
 }
 
