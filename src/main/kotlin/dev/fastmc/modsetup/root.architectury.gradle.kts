@@ -2,11 +2,6 @@ package dev.fastmc.modsetup
 
 println("[Mod Setup] [root.architectury] [${project.displayName}] Configuring architectury for root project")
 
-plugins {
-//    id("architectury-plugin").apply(false)
-//    id("dev.architectury.loom").apply(false)
-}
-
 subprojects.filter {
     it.rootProject == project && it.name.startsWith("architectury-")
 }.forEach {

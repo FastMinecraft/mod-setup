@@ -5,11 +5,19 @@ import org.gradle.api.file.RegularFileProperty
 abstract class RunVmOptionExtension {
     internal val runVmOptions = mutableSetOf<String>()
 
-    fun runVmOption(option: String) {
+    fun add(vararg options: String) {
+        runVmOptions.addAll(options)
+    }
+
+    fun add(options: Iterable<String>) {
+        runVmOptions.addAll(options)
+    }
+
+    fun add(option: String) {
         runVmOptions.add(option)
     }
 
-    fun runVmOptionMultiLine(option: String) {
+    fun addMultiLine(option: String) {
         option
             .lineSequence()
             .map { it.trim() }
