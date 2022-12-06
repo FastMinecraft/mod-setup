@@ -26,7 +26,7 @@ loom {
 }
 
 dependencies {
-    runtimeOnly(architecturyCommonProject.sourceSets.main.get().output)
+    implementation(architecturyCommonProject.sourceSets.main.get().output)
     "library"(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
     "libraryImplementation"(project(":shared:${javaVersion.javaName}"))
 }
