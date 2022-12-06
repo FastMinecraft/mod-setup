@@ -7,18 +7,20 @@ import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.configure
 
 abstract class RunVmOptionExtension {
-    internal val options = mutableSetOf<String>()
+    private val options0 = mutableSetOf<String>()
+
+    val options: Set<String> get() = options0
 
     fun add(vararg options: String) {
-        this.options.addAll(options)
+        options0.addAll(options)
     }
 
     fun add(options: Iterable<String>) {
-        this.options.addAll(options)
+        options0.addAll(options)
     }
 
     fun add(option: String) {
-        options.add(option)
+        options0.add(option)
     }
 
     fun addMultiLine(option: String) {
@@ -26,7 +28,7 @@ abstract class RunVmOptionExtension {
             .lineSequence()
             .map { it.trim() }
             .filter { it.isNotBlank() }
-            .toCollection(options)
+            .toCollection(options0)
     }
 }
 

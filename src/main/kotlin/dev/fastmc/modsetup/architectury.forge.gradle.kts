@@ -57,7 +57,7 @@ parent!!.afterEvaluate {
     }
 }
 
-afterEvaluate {
+//afterEvaluate {
 // Forge run is broken in dev env
 //    tasks.register<Task>("genRuns") {
 //        group = "ide"
@@ -111,4 +111,4 @@ afterEvaluate {
 //            file("${rootProject.projectDir.absolutePath}/architectury-${minecraftVersion}/run").mkdir()
 //        }
 //    }
-}
+//}

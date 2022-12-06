@@ -31,32 +31,35 @@ dependencies {
     "libraryImplementation"(project(":shared:${javaVersion.javaName}"))
 }
 
+tasks {
+    classes {
+        dependsOn(architecturyCommonProject.tasks.classes)
+    }
+
+    jar {
+        dependsOn(architecturyCommonProject.tasks["transformProduction${platform.capitalize()}"])
+    }
+
+    jar {
+        archiveClassifier.set("dev")
+    }
+
+    remapJar {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        archiveBaseName.set(rootProject.name)
+        archiveAppendix.set("${project.name}-${minecraftVersion}")
+        archiveClassifier.set("release")
+    }
+}
+
 afterEvaluate {
     tasks {
-        classes {
-            dependsOn(architecturyCommonProject.tasks.classes)
-        }
-
-        jar {
-            dependsOn(architecturyCommonProject.tasks["transformProduction${platform.capitalize()}"])
-        }
-
         jar {
             from(
                 configurations["library"].map {
                     if (it.isDirectory) it else zipTree(it)
                 }
             )
-
-            archiveClassifier.set("dev")
-        }
-
-        remapJar {
-            duplicatesStrategy = DuplicatesStrategy.INCLUDE
-            archiveBaseName.set(rootProject.name)
-            archiveAppendix.set("${project.name}-${minecraftVersion}")
-            archiveClassifier.set("release")
-            archiveFileName.set("${archiveBaseName.get()}-${archiveAppendix.get()}-${archiveVersion.get()}-release.${archiveExtension.get()}")
         }
     }
 }
