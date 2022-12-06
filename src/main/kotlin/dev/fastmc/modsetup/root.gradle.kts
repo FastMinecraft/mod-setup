@@ -2,12 +2,6 @@ package dev.fastmc.modsetup
 
 extensions.create("runVmOptions", RunVmOptionExtension::class.java)
 
-findProject(":shared")?.apply {
-    apply {
-        plugin("shared")
-    }
-}
-
 println("[Mod Setup] [root] [${project.displayName}] Configuring root project")
 
 plugins {
@@ -79,5 +73,17 @@ allprojects {
 
         library(libraryImplementation)
         implementation(libraryImplementation)
+    }
+}
+
+findProject(":shared")?.apply {
+    apply {
+        plugin("shared")
+    }
+}
+
+findProject(":forge-1.12.2")?.apply {
+    apply {
+        plugin("forge.1-12-2")
     }
 }

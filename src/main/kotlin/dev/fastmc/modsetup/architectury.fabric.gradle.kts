@@ -1,6 +1,6 @@
-import dev.fastmc.modsetup.RunVmOptionExtension
 import dev.fastmc.modsetup.fabricLoaderVersion
 import dev.fastmc.modsetup.minecraftVersion
+import dev.fastmc.modsetup.runVmOptions
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring architectury fabric project")
 
@@ -34,7 +34,7 @@ afterEvaluate {
                 val rootProjectDir = rootDir
 
                 val vmOptions =
-                    (rootProject.extensions.getByType(RunVmOptionExtension::class.java).runVmOptions.toList() + listOf(
+                    (runVmOptions.options.toList() + listOf(
                         "-Dfabric.dli.config=${rootProjectDir}/.gradle/loom-cache/launch.cfg",
                         "-Dfabric.dli.env=client",
                         "-Dfabric.dli.main=net.fabricmc.loader.launch.knot.KnotClient",
