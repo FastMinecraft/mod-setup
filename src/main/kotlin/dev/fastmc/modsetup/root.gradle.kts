@@ -87,3 +87,9 @@ findProject(":forge-1.12.2")?.apply {
         plugin("forge.1-12-2")
     }
 }
+
+if (subprojects.any { it.name.contains("architectury") }) {
+    apply {
+        plugin("dev.fastmc.modsetup.root.architectury")
+    }
+}
