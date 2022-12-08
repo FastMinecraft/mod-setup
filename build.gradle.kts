@@ -54,3 +54,17 @@ kotlin {
     }
     kotlinDaemonJvmArgs = jvmArgs
 }
+
+tasks {
+    compileJava {
+        options.encoding = "UTF-8"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+    }
+}
