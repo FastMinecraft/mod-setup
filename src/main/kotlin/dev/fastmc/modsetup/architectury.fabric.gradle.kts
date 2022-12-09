@@ -1,4 +1,5 @@
 import dev.fastmc.modsetup.fabricLoaderVersion
+import dev.fastmc.modsetup.launchJavaToolchain
 import dev.fastmc.modsetup.minecraftVersion
 import dev.fastmc.modsetup.runVmOptions
 
@@ -30,6 +31,7 @@ afterEvaluate {
     tasks.register<Task>("genRuns") {
         group = "ide"
         doLast {
+            File(rootDir, ".idea/runConfigurations").mkdirs()
             File(rootDir, ".idea/runConfigurations/${project.name}-${minecraftVersion}_runClient.xml").writer().use {
                 val rootProjectDir = rootDir
 
@@ -52,6 +54,8 @@ afterEvaluate {
                     """
                         <component name="ProjectRunConfigurationManager">
                           <configuration default="false" name="${project.name}-${minecraftVersion} runClient" type="Application" factoryName="Application">
+                            <option name="ALTERNATIVE_JRE_PATH" value="${launchJavaToolchain.get().executablePath.asFile.parentFile.parent}" />
+                            <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
                             <option name="MAIN_CLASS_NAME" value="dev.architectury.transformer.TransformerRuntime" />
                             <module name="${rootProject.name}.architectury-${minecraftVersion}.${project.name}.main" />
                             <option name="PROGRAM_PARAMETERS" value="--width 1280 --height 720 --username TEST" />

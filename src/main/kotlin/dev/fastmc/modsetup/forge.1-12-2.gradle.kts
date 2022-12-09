@@ -1,7 +1,4 @@
-import dev.fastmc.modsetup.ForgeProjectExtension
-import dev.fastmc.modsetup.forgeVersion
-import dev.fastmc.modsetup.minecraftVersion
-import dev.fastmc.modsetup.runVmOptions
+import dev.fastmc.modsetup.*
 import net.minecraftforge.gradle.userdev.UserDevExtension
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring forge 1.12.2 project")
@@ -139,8 +136,8 @@ tasks {
 
         exclude { file ->
             file.name.endsWith("kotlin_module")
-                    || excludeNames.contains(file.file.nameWithoutExtension)
-                    || excludeDirs.any { file.path.contains(it) }
+                || excludeNames.contains(file.file.nameWithoutExtension)
+                || excludeDirs.any { file.path.contains(it) }
         }
 
         archiveBaseName.set(rootProject.name)
@@ -165,11 +162,15 @@ tasks {
     }
 }
 
+
+
+
 afterEvaluate {
     tasks {
         register<Task>("genRuns") {
             group = "ide"
             doLast {
+                File(rootDir, ".idea/runConfigurations").mkdirs()
                 File(rootDir, ".idea/runConfigurations/${project.name}_runClient.xml").writer().use { writer ->
                     val vmOptionsList = mutableListOf<String>()
                     vmOptionsList.addAll(runVmOptions.options)
@@ -190,37 +191,39 @@ afterEvaluate {
 
                     writer.write(
                         """
-                        <component name="ProjectRunConfigurationManager">
-                          <configuration default="false" name="${project.name} runClient" type="Application" factoryName="Application">
-                            <envs>
-                              <env name="MCP_TO_SRG" value="${buildDir}/createSrgToMcp/output.srg" />
-                              <env name="MOD_CLASSES" value="$${buildDir}/resources/main;${buildDir}/classes/java/main;${buildDir}/classes/kotlin/main" />
-                              <env name="mainClass" value="net.minecraft.launchwrapper.Launch" />
-                              <env name="MCP_MAPPINGS" value="${mappingsChannel}_$mappingsVersion" />
-                              <env name="FORGE_VERSION" value="$forgeVersion" />
-                              <env name="assetIndex" value="1.12" />
-                              <env name="assetDirectory" value="${
-                            gradle.gradleUserHomeDir.path.replace(
-                                '\\',
-                                '/'
-                            )
-                        }/caches/forge_gradle/assets" />
-                              <env name="nativesDirectory" value="${buildDir}/natives" />
-                              <env name="FORGE_GROUP" value="net.minecraftforge" />
-                              <env name="tweakClass" value="net.minecraftforge.fml.common.launcher.FMLTweaker" />
-                              <env name="MC_VERSION" value="${'$'}{MC_VERSION}" />
-                            </envs>
-                            <option name="MAIN_CLASS_NAME" value="net.minecraftforge.legacydev.MainClient" />
-                            <module name="${rootProject.name}.${project.name}.main" />
-                            <option name="PROGRAM_PARAMETERS" value="--width 1280 --height 720 --username TEST" />
-                            <option name="VM_PARAMETERS" value="${vmOptionsList.joinToString(" ")}" />
-                            <option name="WORKING_DIRECTORY" value="${runDir.absolutePath}" />
-                            <method v="2">
-                              <option name="Gradle.BeforeRunTask" enabled="true" tasks="${project.name}:prepareRunClient" externalProjectPath="${rootDir.absolutePath}" />
-                            </method>
-                          </configuration>
-                        </component>
-                    """.trimIndent()
+                            <component name="ProjectRunConfigurationManager">
+                              <configuration default="false" name="${project.name} runClient" type="Application" factoryName="Application">
+                              <option name="ALTERNATIVE_JRE_PATH" value="${launchJavaToolchain.get().executablePath.asFile.parentFile.parent}" />
+                              <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+                                <envs>
+                                  <env name="MCP_TO_SRG" value="${buildDir}/createSrgToMcp/output.srg" />
+                                  <env name="MOD_CLASSES" value="$${buildDir}/resources/main;${buildDir}/classes/java/main;${buildDir}/classes/kotlin/main" />
+                                  <env name="mainClass" value="net.minecraft.launchwrapper.Launch" />
+                                  <env name="MCP_MAPPINGS" value="${mappingsChannel}_$mappingsVersion" />
+                                  <env name="FORGE_VERSION" value="$forgeVersion" />
+                                  <env name="assetIndex" value="1.12" />
+                                  <env name="assetDirectory" value="${
+                                gradle.gradleUserHomeDir.path.replace(
+                                    '\\',
+                                    '/'
+                                )
+                            }/caches/forge_gradle/assets" />
+                                  <env name="nativesDirectory" value="${buildDir}/natives" />
+                                  <env name="FORGE_GROUP" value="net.minecraftforge" />
+                                  <env name="tweakClass" value="net.minecraftforge.fml.common.launcher.FMLTweaker" />
+                                  <env name="MC_VERSION" value="${'$'}{MC_VERSION}" />
+                                </envs>
+                                <option name="MAIN_CLASS_NAME" value="net.minecraftforge.legacydev.MainClient" />
+                                <module name="${rootProject.name}.${project.name}.main" />
+                                <option name="PROGRAM_PARAMETERS" value="--width 1280 --height 720 --username TEST" />
+                                <option name="VM_PARAMETERS" value="${vmOptionsList.joinToString(" ")}" />
+                                <option name="WORKING_DIRECTORY" value="${runDir.absolutePath}" />
+                                <method v="2">
+                                  <option name="Gradle.BeforeRunTask" enabled="true" tasks="${project.name}:prepareRunClient" externalProjectPath="${rootDir.absolutePath}" />
+                                </method>
+                              </configuration>
+                            </component>
+                        """.trimIndent()
                     )
                 }
             }
