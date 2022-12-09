@@ -1,7 +1,6 @@
 import dev.fastmc.modsetup.javaName
 import dev.fastmc.modsetup.javaVersion
 import dev.fastmc.modsetup.minecraftVersion
-import gradle.kotlin.dsl.accessors._72efc76fad8c8cf3476d335fb6323bde.jar
 
 println("[Mod Setup] [architectury.platform] [${project.displayName}] Configuring architectury platform project")
 

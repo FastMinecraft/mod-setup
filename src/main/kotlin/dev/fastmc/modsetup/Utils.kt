@@ -1,13 +1,12 @@
 package dev.fastmc.modsetup
 
-import gradle.kotlin.dsl.accessors._72efc76fad8c8cf3476d335fb6323bde.javaToolchains
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaLauncher
-import org.gradle.jvm.toolchain.JvmVendorSpec
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.exclude
 
 private val javaNameRegex = "java(\\d+)".toRegex()
@@ -41,7 +40,7 @@ val JavaLanguageVersion.javaName: String
     get() = "java${this.asInt()}"
 
 val Project.launchJavaToolchain: Provider<JavaLauncher>
-    get() = javaToolchains.launcherFor {
+    get() = (extensions.getByName("javaToolchains") as JavaToolchainService).launcherFor {
         languageVersion.set(javaVersion)
     }
 

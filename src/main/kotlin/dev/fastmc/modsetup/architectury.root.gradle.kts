@@ -1,4 +1,6 @@
-import dev.fastmc.modsetup.*
+import dev.fastmc.modsetup.ArchitecturyProjectExtension
+import dev.fastmc.modsetup.disableTask
+import dev.fastmc.modsetup.minecraftVersion
 
 extensions.create("architecturyProject", ArchitecturyProjectExtension::class.java)
 
@@ -12,10 +14,7 @@ plugins {
 
 idea {
     module {
-        excludeDirs.add(file(".architectury-transformer"))
-        subprojects.forEach {
-            excludeDirs.add(file("${it.projectDir}/run"))
-        }
+        excludeDirs.add(file("run"))
     }
 }
 

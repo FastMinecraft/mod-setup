@@ -10,11 +10,18 @@ val forgeProjectExtension = extensions.create("forgeProject", ForgeProjectExtens
 
 plugins {
     java
+    idea
 }
 
 apply {
     plugin("net.minecraftforge.gradle")
     plugin("org.spongepowered.mixin")
+}
+
+idea {
+    module {
+        excludeDirs.add(file("run"))
+    }
 }
 
 repositories {
