@@ -38,11 +38,12 @@ dependencies {
     compileOnly(project(":shared"))
     "libraryImplementation"(project(":shared:java8"))
 
-    "libraryImplementation"("org.spongepowered:mixin:0.7.+") {
+    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
+    testAnnotationProcessor("org.spongepowered:mixin:0.8.5:processor")
+
+    "libraryImplementation"("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         isTransitive = false
     }
-
-    "annotationProcessor"("org.spongepowered:mixin:0.8.+:processor")
 }
 
 configure<UserDevExtension> {
