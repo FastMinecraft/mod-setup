@@ -58,16 +58,7 @@ configure<UserDevExtension> {
 
     runs {
         create("client") {
-            workingDirectory = project.file("run").path
-            ideaModule("${rootProject.name}.${project.name}.main")
 
-            properties(
-                mapOf(
-                    "forge.logging.console.level" to "info",
-                    "fml.coreMods.load" to "me.luna.fastmc.FastMcDevFixCoremod",
-                    "mixin.env.disableRefMap" to "true"
-                )
-            )
         }
     }
 }

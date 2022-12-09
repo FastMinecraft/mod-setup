@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22")
-    implementation("architectury-plugin:architectury-plugin.gradle.plugin:9.9-SNAPSHOT")
+    implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4.+")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.0.+")
     implementation("net.minecraftforge.gradle:ForgeGradle:5.+")
     implementation("org.spongepowered:mixingradle:0.7.+")
