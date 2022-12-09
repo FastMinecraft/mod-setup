@@ -74,6 +74,7 @@ class ArchitecturyForgeExtension {
 
 abstract class ForgeProjectExtension(private val project: Project) : MixinConfigContainer() {
     abstract val coreModClass: Property<String>
+    abstract val devCoreModClass: Property<String>
 
     var accessTransformer: String? = null
         set(value) {

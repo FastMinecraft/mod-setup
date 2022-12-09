@@ -1,4 +1,7 @@
-import dev.fastmc.modsetup.*
+import dev.fastmc.modsetup.ForgeProjectExtension
+import dev.fastmc.modsetup.forgeVersion
+import dev.fastmc.modsetup.minecraftVersion
+import dev.fastmc.modsetup.runVmOptions
 import net.minecraftforge.gradle.userdev.UserDevExtension
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring forge 1.12.2 project")
@@ -82,14 +85,20 @@ tasks {
         manifest {
             attributes(
                 "Manifest-Version" to 1.0,
-                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
-                "FMLCorePluginContainsFMLMod" to true,
-                "FMLCorePlugin" to "me.luna.fastmc.FastMcCoremod",
+                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker"
             )
 
-            if (forgeProjectExtension.mixinConfigs.isNotEmpty()) {
+            forgeProjectExtension.coreModClass.orNull?.let {
                 attributes(
-                    "MixinConfigs" to forgeProjectExtension.mixinConfigs.joinToString(",")
+                    "FMLCorePluginContainsFMLMod" to true,
+                    "FMLCorePlugin" to it
+                )
+            }
+
+            val mixinConfigs = forgeProjectExtension.mixinConfigs
+            if (mixinConfigs.isNotEmpty()) {
+                attributes(
+                    "MixinConfigs" to mixinConfigs.joinToString(",")
                 )
             }
 
@@ -170,7 +179,7 @@ afterEvaluate {
                             "-Dmixin.env.disableRefMap=true",
                         )
                     )
-                    forgeProjectExtension.coreModClass.orNull?.let {
+                    forgeProjectExtension.devCoreModClass.orElse(forgeProjectExtension.coreModClass).orNull.let {
                         vmOptionsList.add("-Dfml.coreMods.load=$it")
                     }
 
