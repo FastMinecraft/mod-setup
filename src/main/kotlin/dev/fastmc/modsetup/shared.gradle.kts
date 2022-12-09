@@ -13,6 +13,14 @@ subprojects {
         plugin("kotlin")
     }
 
+    dependencies {
+        val kotlinVersion: String by rootProject
+        val kotlinxCoroutineVersion: String by rootProject
+
+        "libraryApi"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+        "libraryApi"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutineVersion")
+    }
+
     tasks {
         processResources {
             from(sharedProject.sourceSets.main.get().resources)
@@ -21,9 +29,14 @@ subprojects {
             source(sharedProject.sourceSets.main.get().java)
         }
         compileKotlin {
-            source(sharedProject.kotlin.sourceSets["main"].kotlin)
+            source(sharedProject.sourceSets.main.get().kotlin)
         }
         sharedProject.tasks.classes.get().dependsOn(classes)
+
+        jar {
+            archiveBaseName.set(sharedProject.name)
+            archiveClassifier.set(project.name)
+        }
     }
 }
 

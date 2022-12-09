@@ -1,6 +1,11 @@
 import dev.fastmc.modsetup.*
 import net.minecraftforge.gradle.userdev.UserDevExtension
 
+println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring forge 1.12.2 project")
+
+group = rootProject.group
+version = rootProject.version
+
 val forgeProjectExtension = extensions.create("forgeProject", ForgeProjectExtension::class.java)
 
 plugins {
@@ -61,99 +66,103 @@ configure<UserDevExtension> {
     }
 }
 
-afterEvaluate {
-    tasks {
-        jar {
-            exclude {
-                it.name.contains("devfix", true)
-            }
-
-            archiveBaseName.set(rootProject.name)
-            archiveAppendix.set(project.name)
+tasks {
+    jar {
+        exclude {
+            it.name.contains("devfix", true)
         }
 
-        val releaseJar = register<Jar>("releaseJar") {
-            group = "build"
-            dependsOn("reobfJar")
+        archiveBaseName.set(rootProject.name)
+        archiveAppendix.set(project.name)
+    }
 
-            manifest {
+    val releaseJar by tasks.registering(Jar::class) {
+        group = "build"
+        dependsOn("reobfJar")
+
+        manifest {
+            attributes(
+                "Manifest-Version" to 1.0,
+                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
+                "FMLCorePluginContainsFMLMod" to true,
+                "FMLCorePlugin" to "me.luna.fastmc.FastMcCoremod",
+            )
+
+            if (forgeProjectExtension.mixinConfigs.isNotEmpty()) {
                 attributes(
-                    "Manifest-Version" to 1.0,
-                    "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
-                    "FMLCorePluginContainsFMLMod" to true,
-                    "FMLCorePlugin" to "me.luna.fastmc.FastMcCoremod",
+                    "MixinConfigs" to forgeProjectExtension.mixinConfigs.joinToString(",")
                 )
-
-                if (forgeProjectExtension.mixinConfigs.isNotEmpty()) {
-                    attributes(
-                        "MixinConfigs" to forgeProjectExtension.mixinConfigs.joinToString(",")
-                    )
-                }
-
-                forgeProjectExtension.accessTransformer?.let {
-                    attributes(
-                        "FMLAT" to it
-                    )
-                }
             }
 
-            val excludeDirs = listOf(
-                "META-INF/com.android.tools",
-                "META-INF/maven",
-                "META-INF/proguard",
-                "META-INF/versions"
-            )
-            val excludeNames = hashSetOf(
-                "module-info",
-                "MUMFREY",
-                "LICENSE",
-                "kotlinx_coroutines_core"
-            )
-
-            from(
-                jar.get().outputs.files.map {
-                    if (it.isDirectory) it else zipTree(it)
-                }
-            )
-
-            exclude { file ->
-                file.name.endsWith("kotlin_module")
-                    || excludeNames.contains(file.file.nameWithoutExtension)
-                    || excludeDirs.any { file.path.contains(it) }
+            forgeProjectExtension.accessTransformer?.let {
+                attributes(
+                    "FMLAT" to it
+                )
             }
+        }
 
-            from(
+        val excludeDirs = listOf(
+            "META-INF/com.android.tools",
+            "META-INF/maven",
+            "META-INF/proguard",
+            "META-INF/versions"
+        )
+        val excludeNames = hashSetOf(
+            "module-info",
+            "MUMFREY",
+            "LICENSE",
+            "kotlinx_coroutines_core"
+        )
+
+        from(
+            jar.get().outputs.files.map {
+                if (it.isDirectory) it else zipTree(it)
+            }
+        )
+
+
+        from(
+            provider {
                 configurations["library"].map {
                     if (it.isDirectory) it else zipTree(it)
                 }
-            )
-
-            archiveBaseName.set(rootProject.name)
-            archiveAppendix.set(project.name)
-            archiveClassifier.set("release")
-        }
-
-        afterEvaluate {
-            getByName("reobfJar").finalizedBy(releaseJar)
-        }
-
-        artifacts {
-            archives(releaseJar)
-        }
-
-        clean {
-            val set = mutableSetOf<Any>()
-            buildDir.listFiles()?.filterNotTo(set) {
-                it.name == "fg_cache"
             }
-            delete = set
+        )
+
+        exclude { file ->
+            file.name.endsWith("kotlin_module")
+                    || excludeNames.contains(file.file.nameWithoutExtension)
+                    || excludeDirs.any { file.path.contains(it) }
         }
 
+        archiveBaseName.set(rootProject.name)
+        archiveAppendix.set(project.name)
+        archiveClassifier.set("release")
+    }
+
+    afterEvaluate {
+        getByName("reobfJar").finalizedBy(releaseJar)
+    }
+
+    artifacts {
+        archives(releaseJar)
+    }
+
+    clean {
+        val set = mutableSetOf<Any>()
+        buildDir.listFiles()?.filterNotTo(set) {
+            it.name == "fg_cache"
+        }
+        delete = set
+    }
+}
+
+afterEvaluate {
+    tasks {
         register<Task>("genRuns") {
             group = "ide"
             doLast {
                 File(rootDir, ".idea/runConfigurations/${project.name}_runClient.xml").writer().use { writer ->
-                    @Suppress("UNCHECKED_CAST")
                     val vmOptionsList = mutableListOf<String>()
                     vmOptionsList.addAll(runVmOptions.options)
                     vmOptionsList.addAll(

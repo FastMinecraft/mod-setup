@@ -23,29 +23,9 @@ tasks {
         }
     }
 
-    val count = run {
-        val regex = "project ':architectury-[\\d.]+:(forge|fabric)'".toRegex()
-        subprojects.filter { it.displayName.matches(regex) }.size
-    }
-
-    val taskList = mutableListOf<Task>()
-
     subprojects {
-        tasks.findByName("ideaSyncTask")?.finalizedBy(clearRuns)
-        tasks.findByName("transformProductionForge")?.let {
-            taskList.add(it)
-        }
-        tasks.findByName("transformProductionFabric")?.let {
-            taskList.add(it)
-        }
-
-        if (taskList.size == count) {
-            var last = taskList.first()
-            for (i in 1 until taskList.size) {
-                val task = taskList[i]
-                task.mustRunAfter(last)
-                last = task
-            }
+        afterEvaluate {
+            tasks.findByName("ideaSyncTask")?.finalizedBy(clearRuns)
         }
     }
 }

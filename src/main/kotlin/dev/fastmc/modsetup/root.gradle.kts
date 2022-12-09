@@ -63,16 +63,13 @@ allprojects {
 
     val library by configurations.creating
     val libraryImplementation by configurations.creating
+    val libraryApi by configurations.creating
 
     dependencies {
-        val kotlinVersion: String by rootProject
-        val kotlinxCoroutineVersion: String by rootProject
-
-        libraryImplementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-        libraryImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutineVersion")
-
         library(libraryImplementation)
+        library(libraryApi)
         implementation(libraryImplementation)
+        api(libraryApi)
     }
 }
 
