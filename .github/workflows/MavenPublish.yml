@@ -11,4 +11,4 @@ jobs:
             target-repo: maven-repo
             target-branch: master
         secrets:
-            token: ${{ secrets.GITHUB_TOKEN }}
+            token: ${{ secrets.MAVEN_REPO_GIT }}
