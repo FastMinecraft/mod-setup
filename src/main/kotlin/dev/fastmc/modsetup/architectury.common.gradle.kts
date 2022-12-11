@@ -22,8 +22,6 @@ architectury {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-
-    compileOnly(project(":shared"))
     implementation(project(":shared:${javaVersion.javaName}"))
 }
 

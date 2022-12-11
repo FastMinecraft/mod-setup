@@ -30,18 +30,16 @@ afterEvaluate {
         doLast {
             File(rootDir, ".idea/runConfigurations").mkdirs()
             File(rootDir, ".idea/runConfigurations/${project.name}-${minecraftVersion}_runClient.xml").writer().use {
-                val rootProjectDir = rootDir
-
                 val vmOptions =
                     (runVmOptions.options.toList() + listOf(
-                        "-Dfabric.dli.config=${rootProjectDir}/.gradle/loom-cache/launch.cfg",
+                        "-Dfabric.dli.config=$projectDir/.gradle/loom-cache/launch.cfg",
                         "-Dfabric.dli.env=client",
                         "-Dfabric.dli.main=net.fabricmc.loader.launch.knot.KnotClient",
-                        "-Darchitectury.main.class=${rootProjectDir}/.gradle/architectury/.main_class",
-                        "-Darchitectury.runtime.transformer=${rootProjectDir}/.gradle/architectury/.transforms",
-                        "-Darchitectury.properties=${rootProjectDir}/.gradle/architectury/.properties",
+                        "-Darchitectury.main.class=$projectDir/.gradle/architectury/.main_class",
+                        "-Darchitectury.runtime.transformer=$projectDir/.gradle/architectury/.transforms",
+                        "-Darchitectury.properties=$projectDir/.gradle/architectury/.properties",
                         "-Djdk.attach.allowAttachSelf=true",
-                        "-javaagent:$rootProjectDir/.gradle/architectury/architectury-transformer-agent.jar"
+                        "-javaagent:$rootDir/.gradle/architectury/architectury-transformer-agent.jar"
                     )).joinToString(" ")
 
                 val runDir = file("${parent!!.projectDir.absolutePath}/run")

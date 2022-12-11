@@ -2,6 +2,9 @@ package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.subproject] [${project.displayName}] Configuring architectury subproject")
 
+group = rootProject.group
+version = rootProject.version
+
 plugins {
     id("architectury-plugin")
     id("dev.architectury.loom")
@@ -16,6 +19,7 @@ apply {
 dependencies {
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
     "mappings"("net.fabricmc:yarn:$yarnMappings")
+    compileOnly(project(":shared"))
 }
 
 when (name) {

@@ -1,6 +1,7 @@
 package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.forge] [${project.displayName}] Configuring architectury forge project")
+
 val thisProject = project
 
 project.parent!!.afterEvaluate {

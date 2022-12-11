@@ -5,9 +5,6 @@ println("[Mod Setup] [architectury.platform] [${project.displayName}] Configurin
 val platform = project.property("loom.platform") as String
 val architecturyCommonProject = project("${project.parent!!.path}:common")
 
-group = rootProject.group
-version = rootProject.version
-
 plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
