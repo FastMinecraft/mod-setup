@@ -1,4 +1,5 @@
-import dev.fastmc.modsetup.*
+package dev.fastmc.modsetup
+
 import net.minecraftforge.gradle.userdev.UserDevExtension
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring forge 1.12.2 project")
@@ -201,11 +202,11 @@ afterEvaluate {
                                   <env name="FORGE_VERSION" value="$forgeVersion" />
                                   <env name="assetIndex" value="1.12" />
                                   <env name="assetDirectory" value="${
-                                gradle.gradleUserHomeDir.path.replace(
-                                    '\\',
-                                    '/'
-                                )
-                            }/caches/forge_gradle/assets" />
+                            gradle.gradleUserHomeDir.path.replace(
+                                '\\',
+                                '/'
+                            )
+                        }/caches/forge_gradle/assets" />
                                   <env name="nativesDirectory" value="${buildDir}/natives" />
                                   <env name="FORGE_GROUP" value="net.minecraftforge" />
                                   <env name="tweakClass" value="net.minecraftforge.fml.common.launcher.FMLTweaker" />

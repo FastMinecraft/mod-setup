@@ -1,6 +1,4 @@
-import dev.fastmc.modsetup.ArchitecturyProjectExtension
-import dev.fastmc.modsetup.disableTask
-import dev.fastmc.modsetup.minecraftVersion
+package dev.fastmc.modsetup
 
 extensions.create("architecturyProject", ArchitecturyProjectExtension::class.java)
 
@@ -43,6 +41,6 @@ subprojects.forEach {
 
 subprojects {
     apply {
-        plugin("architectury.subproject")
+        plugin("dev.fastmc.modsetup.architectury.subproject")
     }
 }

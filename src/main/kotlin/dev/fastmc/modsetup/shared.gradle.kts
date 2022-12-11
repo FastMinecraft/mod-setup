@@ -1,4 +1,4 @@
-import dev.fastmc.modsetup.disableTask
+package dev.fastmc.modsetup
 
 plugins {
     java

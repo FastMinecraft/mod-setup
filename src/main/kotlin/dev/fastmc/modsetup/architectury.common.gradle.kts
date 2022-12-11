@@ -1,4 +1,4 @@
-import dev.fastmc.modsetup.*
+package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.common] [${project.displayName}] Configuring architectury common project")
 val thisProject = project

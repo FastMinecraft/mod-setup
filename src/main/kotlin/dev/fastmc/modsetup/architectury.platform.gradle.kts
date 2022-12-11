@@ -1,6 +1,4 @@
-import dev.fastmc.modsetup.javaName
-import dev.fastmc.modsetup.javaVersion
-import dev.fastmc.modsetup.minecraftVersion
+package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.platform] [${project.displayName}] Configuring architectury platform project")
 
@@ -17,7 +15,7 @@ plugins {
 }
 
 apply {
-    plugin("architectury.$platform")
+    plugin("dev.fastmc.modsetup.architectury.$platform")
 }
 
 architectury {

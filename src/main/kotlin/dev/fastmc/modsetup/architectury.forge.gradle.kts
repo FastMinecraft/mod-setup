@@ -1,7 +1,4 @@
-import dev.fastmc.modsetup.ArchitecturyProjectExtension
-import dev.fastmc.modsetup.AtPatchTask
-import dev.fastmc.modsetup.forgeVersion
-import dev.fastmc.modsetup.minecraftVersion
+package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.forge] [${project.displayName}] Configuring architectury forge project")
 val thisProject = project

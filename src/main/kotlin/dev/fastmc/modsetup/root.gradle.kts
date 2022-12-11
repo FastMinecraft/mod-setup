@@ -75,13 +75,13 @@ allprojects {
 
 findProject(":shared")?.apply {
     apply {
-        plugin("shared")
+        plugin("dev.fastmc.modsetup.shared")
     }
 }
 
 findProject(":forge-1.12.2")?.apply {
     apply {
-        plugin("forge.1-12-2")
+        plugin("dev.fastmc.modsetup.forge.1-12-2")
     }
 }
 

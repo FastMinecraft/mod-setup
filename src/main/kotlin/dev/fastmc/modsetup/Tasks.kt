@@ -11,7 +11,8 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 
-abstract class AtPatchTask @Inject constructor(private val patches: Map<String, String>, private val jarTask: Jar) : DefaultTask() {
+abstract class AtPatchTask @Inject constructor(private val patches: Map<String, String>, private val jarTask: Jar) :
+    DefaultTask() {
     init {
         jarTask.finalizedBy(this)
     }

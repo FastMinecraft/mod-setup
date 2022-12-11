@@ -1,5 +1,4 @@
-import dev.fastmc.modsetup.minecraftVersion
-import dev.fastmc.modsetup.yarnMappings
+package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.subproject] [${project.displayName}] Configuring architectury subproject")
 
@@ -22,17 +21,17 @@ dependencies {
 when (name) {
     "common" -> {
         apply {
-            plugin("architectury.common")
+            plugin("dev.fastmc.modsetup.architectury.common")
         }
     }
     "forge" -> {
         apply {
-            plugin("architectury.platform")
+            plugin("dev.fastmc.modsetup.architectury.platform")
         }
     }
     "fabric" -> {
         apply {
-            plugin("architectury.platform")
+            plugin("dev.fastmc.modsetup.architectury.platform")
         }
     }
 }

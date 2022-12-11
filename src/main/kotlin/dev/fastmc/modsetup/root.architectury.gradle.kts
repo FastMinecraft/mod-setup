@@ -6,7 +6,7 @@ subprojects.filter {
     it.rootProject == project && it.name.startsWith("architectury-")
 }.forEach {
     it.apply {
-        plugin("architectury.root")
+        plugin("dev.fastmc.modsetup.architectury.root")
     }
 }
 

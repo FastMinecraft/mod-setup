@@ -1,7 +1,4 @@
-import dev.fastmc.modsetup.fabricLoaderVersion
-import dev.fastmc.modsetup.launchJavaToolchain
-import dev.fastmc.modsetup.minecraftVersion
-import dev.fastmc.modsetup.runVmOptions
+package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring architectury fabric project")
 
