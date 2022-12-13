@@ -1,8 +1,8 @@
 package dev.fastmc.modsetup
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.jvm.tasks.Jar
 import java.io.File
@@ -17,23 +17,16 @@ abstract class AtPatchTask @Inject constructor(private val patches: Map<String, 
         jarTask.finalizedBy(this)
     }
 
-    @get:InputFiles
-    val inputs: FileCollection
-        get() = jarTask.outputs.files
+    @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
+    @get:InputFile
+    val inputFile by lazy { jarTask.outputs.files.singleFile!! }
+
+    @get:OutputFile
+    val outputFile by lazy { File(inputFile.parent, inputFile.name.replace("remapped", "patched")) }
 
     @TaskAction
     fun patch() {
-        inputs.asSequence()
-            .filter { it.isFile }
-            .filter { it.extension == "jar" }
-            .filter { it.name.contains("unpatched") }
-            .forEach {
-                patchJarFile(it)
-            }
-    }
-
-    private fun patchJarFile(file: File) {
-        val zipFile = ZipFile(file)
+        val zipFile = ZipFile(inputFile)
         val oldText = zipFile.getInputStream(zipFile.getEntry("META-INF/accesstransformer.cfg"))
             .readBytes()
             .decodeToString()
@@ -46,7 +39,6 @@ abstract class AtPatchTask @Inject constructor(private val patches: Map<String, 
             .map { ZipEntry(it.name) to zipFile.getInputStream(it).readBytes() }
             .toList()
 
-        val outputFile = File(file.parent, file.name.replace("unpatched", "release"))
         ZipOutputStream(outputFile.outputStream().buffered(1024 * 1024)).use { zip ->
             cacheZipEntries.forEach { (zipEntry, bytes) ->
                 zip.putNextEntry(zipEntry)

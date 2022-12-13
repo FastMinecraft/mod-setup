@@ -36,3 +36,4 @@ afterEvaluate {
 }
 
 disableTask(tasks.remapJar)
+disableTask(tasks.prepareRemapJar)

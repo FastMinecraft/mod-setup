@@ -22,7 +22,7 @@ subprojects {
 
         tasks {
             jar {
-                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
 
             compileJava {

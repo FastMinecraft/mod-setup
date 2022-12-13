@@ -59,32 +59,44 @@ tasks {
         archiveClassifier.set("remapped")
     }
 
-    val releaseJar by registering(Jar::class) {
-        group = "build"
-        dependsOn(remapJar)
+    afterEvaluate {
+        val releaseJar by registering(Jar::class) {
+            group = "build"
+            val taskInput = findByName("atPatch") ?: remapJar.get()
+            dependsOn(taskInput)
+            mustRunAfter(taskInput)
+            println(taskInput)
 
-        from(
-            remapJar.get().outputs.files.map {
-                if (it.isDirectory) it else zipTree(it)
+            manifest {
+                from(provider {
+                    zipTree(taskInput.outputs.files.singleFile).find {
+                        it.name == "MANIFEST.MF"
+                    }
+                })
             }
-        )
 
-        from(
-            provider {
-                configurations["library"].map {
-                    if (it.isDirectory) it else zipTree(it)
+            from(
+                provider {
+                    configurations["library"].map {
+                        if (it.isDirectory) it else zipTree(it)
+                    }
                 }
+            ) {
+                exclude("META-INF/**")
             }
-        )
 
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+            from(
+                zipTree(taskInput.outputs.files.singleFile)
+            )
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-        archiveBaseName.set(rootProject.name)
-        archiveAppendix.set("${project.name}-${minecraftVersion}")
-        archiveClassifier.set("release")
-    }
+            archiveBaseName.set(rootProject.name)
+            archiveAppendix.set("${project.name}-${minecraftVersion}")
+            archiveClassifier.set("release")
+        }
 
-    artifacts {
-        archives(releaseJar)
+        artifacts {
+            archives(releaseJar)
+        }
     }
 }

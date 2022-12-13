@@ -139,6 +139,8 @@ tasks {
                 || excludeDirs.any { file.path.contains(it) }
         }
 
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
         archiveBaseName.set(rootProject.name)
         archiveAppendix.set(project.name)
         archiveClassifier.set("release")

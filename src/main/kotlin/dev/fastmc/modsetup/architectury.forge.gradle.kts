@@ -47,10 +47,7 @@ parent!!.afterEvaluate {
     val patches = atPatchExtension.patches
     if (patches.isNotEmpty()) {
         thisProject.tasks {
-            remapJar {
-                archiveClassifier.set("unpatched")
-            }
-            create("atPatch", AtPatchTask::class.java, patches, remapJar.get())
+            project.ext["releaseJarInput"] = create("atPatch", AtPatchTask::class.java, patches, remapJar.get())
         }
     }
 }
