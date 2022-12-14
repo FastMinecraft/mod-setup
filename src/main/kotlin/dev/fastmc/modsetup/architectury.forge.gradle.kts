@@ -34,14 +34,6 @@ dependencies {
     "forge"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
 }
 
-tasks {
-    processResources {
-        filesMatching("*/mods.toml") {
-            expand("version" to project.version)
-        }
-    }
-}
-
 parent!!.afterEvaluate {
     val atPatchExtension = extensions.getByType(ArchitecturyProjectExtension::class.java).forge.atPatch
     val patches = atPatchExtension.patches
@@ -52,30 +44,38 @@ parent!!.afterEvaluate {
     }
 }
 
-//afterEvaluate {
-// Forge run is broken in dev env
-//    tasks.register<Task>("genRuns") {
-//        group = "ide"
-//        doLast {
-//            File(rootDir, ".idea/runConfigurations/${project.name}-${minecraftVersion}_runClient.xml").writer().use {
-//                @Suppress("UNCHECKED_CAST")
-//                val vmOptions = ((rootProject.ext["runVmOptions"] as List<String>) + listOf(
-//                    "-Dfabric.dli.config=${project.projectDir.absolutePath}/.gradle/loom-cache/launch.cfg",
-//                    "-Dfabric.dli.env=client",
-//                    "-XX:+IgnoreUnrecognizedVMOptions",
-//                    "--add-exports=java.base/sun.security.util=ALL-UNNAMED",
-//                    "--add-exports=jdk.naming.dns/com.sun.jndi.dns=java.naming",
-//                    "--add-opens=java.base/java.util.jar=ALL-UNNAMED",
-//                    "-Dfabric.dli.main=net.minecraftforge.userdev.LaunchTesting",
-//                    "-Darchitectury.main.class=${project.projectDir.absolutePath}/.gradle/architectury/.main_class",
-//                    "-Darchitectury.runtime.transformer=${project.projectDir.absolutePath}/.gradle/architectury/.transforms",
-//                    "-Darchitectury.properties=${project.projectDir.absolutePath}/.gradle/architectury/.properties",
-//                    "-Djdk.attach.allowAttachSelf=true",
-//                    "-javaagent:${rootProject.projectDir.absolutePath}/.gradle/architectury/architectury-transformer-agent.jar"
-//                )).joinToString(" ")
+afterEvaluate {
+    tasks {
+        processResources {
+            filesMatching("*/mods.toml") {
+                expand("version" to rootProject.version)
+            }
+        }
+
+//        Forge run is broken in dev env
+//        register<Task>("genRuns") {
+//            group = "ide"
+//            doLast {
+//                File(rootDir, ".idea/runConfigurations/${project.name}-${minecraftVersion}_runClient.xml").writer()
+//                    .use {
+//                        @Suppress("UNCHECKED_CAST")
+//                        val vmOptions = ((rootProject.ext["runVmOptions"] as List<String>) + listOf(
+//                            "-Dfabric.dli.config=${project.projectDir.absolutePath}/.gradle/loom-cache/launch.cfg",
+//                            "-Dfabric.dli.env=client",
+//                            "-XX:+IgnoreUnrecognizedVMOptions",
+//                            "--add-exports=java.base/sun.security.util=ALL-UNNAMED",
+//                            "--add-exports=jdk.naming.dns/com.sun.jndi.dns=java.naming",
+//                            "--add-opens=java.base/java.util.jar=ALL-UNNAMED",
+//                            "-Dfabric.dli.main=net.minecraftforge.userdev.LaunchTesting",
+//                            "-Darchitectury.main.class=${project.projectDir.absolutePath}/.gradle/architectury/.main_class",
+//                            "-Darchitectury.runtime.transformer=${project.projectDir.absolutePath}/.gradle/architectury/.transforms",
+//                            "-Darchitectury.properties=${project.projectDir.absolutePath}/.gradle/architectury/.properties",
+//                            "-Djdk.attach.allowAttachSelf=true",
+//                            "-javaagent:${rootProject.projectDir.absolutePath}/.gradle/architectury/architectury-transformer-agent.jar"
+//                        )).joinToString(" ")
 //
-//                it.write(
-//                    """
+//                        it.write(
+//                            """
 //                        <component name="ProjectRunConfigurationManager">
 //                          <configuration default="false" name="${project.name}-${minecraftVersion} runClient" type="Application" factoryName="Application">
 //                            <envs>
@@ -101,9 +101,11 @@ parent!!.afterEvaluate {
 //                          </configuration>
 //                        </component>
 //                    """.trimIndent()
-//                )
+//                        )
+//                    }
+//                file("${rootProject.projectDir.absolutePath}/architectury-${minecraftVersion}/run").mkdir()
 //            }
-//            file("${rootProject.projectDir.absolutePath}/architectury-${minecraftVersion}/run").mkdir()
 //        }
-//    }
-//}
+
+    }
+}

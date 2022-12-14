@@ -16,37 +16,38 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
 }
 
-tasks {
-    processResources {
-        filesMatching("fabric.mod.json") {
-            expand("version" to project.version)
-        }
-    }
-}
+
 
 afterEvaluate {
-    tasks.register<Task>("genRuns") {
-        group = "ide"
-        doLast {
-            File(rootDir, ".idea/runConfigurations").mkdirs()
-            File(rootDir, ".idea/runConfigurations/${project.name}-${minecraftVersion}_runClient.xml").writer().use {
-                val vmOptions =
-                    (runVmOptions.options.toList() + listOf(
-                        "-Dfabric.dli.config=$projectDir/.gradle/loom-cache/launch.cfg",
-                        "-Dfabric.dli.env=client",
-                        "-Dfabric.dli.main=net.fabricmc.loader.launch.knot.KnotClient",
-                        "-Darchitectury.main.class=$projectDir/.gradle/architectury/.main_class",
-                        "-Darchitectury.runtime.transformer=$projectDir/.gradle/architectury/.transforms",
-                        "-Darchitectury.properties=$projectDir/.gradle/architectury/.properties",
-                        "-Djdk.attach.allowAttachSelf=true",
-                        "-javaagent:$rootDir/.gradle/architectury/architectury-transformer-agent.jar"
-                    )).joinToString(" ")
+    tasks {
+        processResources {
+            filesMatching("fabric.mod.json") {
+                expand("version" to rootProject.version)
+            }
+        }
 
-                val runDir = file("${parent!!.projectDir.absolutePath}/run")
-                runDir.mkdir()
+        register<Task>("genRuns") {
+            group = "ide"
+            doLast {
+                File(rootDir, ".idea/runConfigurations").mkdirs()
+                File(rootDir, ".idea/runConfigurations/${project.name}-${minecraftVersion}_runClient.xml").writer().use {
+                    val vmOptions =
+                        (runVmOptions.options.toList() + listOf(
+                            "-Dfabric.dli.config=$projectDir/.gradle/loom-cache/launch.cfg",
+                            "-Dfabric.dli.env=client",
+                            "-Dfabric.dli.main=net.fabricmc.loader.launch.knot.KnotClient",
+                            "-Darchitectury.main.class=$projectDir/.gradle/architectury/.main_class",
+                            "-Darchitectury.runtime.transformer=$projectDir/.gradle/architectury/.transforms",
+                            "-Darchitectury.properties=$projectDir/.gradle/architectury/.properties",
+                            "-Djdk.attach.allowAttachSelf=true",
+                            "-javaagent:$rootDir/.gradle/architectury/architectury-transformer-agent.jar"
+                        )).joinToString(" ")
 
-                it.write(
-                    """
+                    val runDir = file("${parent!!.projectDir.absolutePath}/run")
+                    runDir.mkdir()
+
+                    it.write(
+                        """
                         <component name="ProjectRunConfigurationManager">
                           <configuration default="false" name="${project.name}-${minecraftVersion} runClient" type="Application" factoryName="Application">
                             <option name="ALTERNATIVE_JRE_PATH" value="${launchJavaToolchain.get().executablePath.asFile.parentFile.parent}" />
@@ -62,7 +63,8 @@ afterEvaluate {
                           </configuration>
                         </component>
                     """.trimIndent()
-                )
+                    )
+                }
             }
         }
     }

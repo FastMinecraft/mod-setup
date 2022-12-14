@@ -29,7 +29,7 @@ afterEvaluate {
     tasks {
         processResources {
             filesMatching("fabric.mod.json") {
-                expand("version" to project.version)
+                expand("version" to rootProject.version)
             }
         }
     }
