@@ -65,7 +65,6 @@ tasks {
             val taskInput = findByName("atPatch") ?: remapJar.get()
             dependsOn(taskInput)
             mustRunAfter(taskInput)
-            println(taskInput)
 
             manifest {
                 from(provider {

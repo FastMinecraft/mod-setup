@@ -14,6 +14,7 @@ import javax.inject.Inject
 abstract class AtPatchTask @Inject constructor(private val patches: Map<String, String>, private val jarTask: Jar) :
     DefaultTask() {
     init {
+        this.dependsOn(jarTask)
         jarTask.finalizedBy(this)
     }
 
