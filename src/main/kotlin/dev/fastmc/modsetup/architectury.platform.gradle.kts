@@ -38,16 +38,16 @@ tasks {
 
     jar {
         dependsOn(architecturyCommonProject.tasks["transformProduction${platform.capitalize()}"])
-    }
 
-    jar {
         from(
             provider {
-                common.map {
+                configurations["common"].map {
                     if (it.isDirectory) it else zipTree(it)
                 }
             }
-        )
+        ) {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        }
 
         archiveClassifier.set("dev")
     }
