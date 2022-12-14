@@ -2,8 +2,10 @@ package dev.fastmc.modsetup
 
 println("[Mod Setup] [architectury.subproject] [${project.displayName}] Configuring architectury subproject")
 
-group = rootProject.group
-version = rootProject.version
+afterEvaluate {
+    group = rootProject.group
+    version = rootProject.version
+}
 
 plugins {
     id("architectury-plugin")

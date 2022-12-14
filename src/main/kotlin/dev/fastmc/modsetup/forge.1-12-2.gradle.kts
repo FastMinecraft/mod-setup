@@ -4,8 +4,10 @@ import net.minecraftforge.gradle.userdev.UserDevExtension
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring forge 1.12.2 project")
 
-group = rootProject.group
-version = rootProject.version
+afterEvaluate {
+    group = rootProject.group
+    version = rootProject.version
+}
 
 val forgeProjectExtension = extensions.create("forgeProject", ForgeProjectExtension::class.java)
 
