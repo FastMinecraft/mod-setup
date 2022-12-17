@@ -7,6 +7,14 @@ plugins {
 
 val sharedProject = project
 
+val kotlinVersion: String by rootProject
+val kotlinxCoroutineVersion: String by rootProject
+
+dependencies {
+    "libraryApi"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+    "libraryApi"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutineVersion")
+}
+
 subprojects {
     apply {
         plugin("java")
@@ -14,9 +22,6 @@ subprojects {
     }
 
     dependencies {
-        val kotlinVersion: String by rootProject
-        val kotlinxCoroutineVersion: String by rootProject
-
         "libraryApi"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
         "libraryApi"("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutineVersion")
     }
