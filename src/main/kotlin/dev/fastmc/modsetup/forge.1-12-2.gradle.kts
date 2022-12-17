@@ -1,6 +1,9 @@
 package dev.fastmc.modsetup
 
 import net.minecraftforge.gradle.userdev.UserDevExtension
+import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring forge 1.12.2 project")
 
@@ -46,7 +49,7 @@ dependencies {
 
     // Dependencies
     compileOnly(project(":shared"))
-    "libraryImplementation"(project(":shared:java8"))
+    "modCore"(project(":shared:java8", "modCoreOutput"))
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     testAnnotationProcessor("org.spongepowered:mixin:0.8.5:processor")
@@ -68,18 +71,6 @@ configure<UserDevExtension> {
 
 tasks {
     jar {
-        exclude {
-            it.name.contains("devfix", true)
-        }
-
-        archiveBaseName.set(rootProject.name)
-        archiveAppendix.set(project.name)
-    }
-
-    val releaseJar by tasks.registering(Jar::class) {
-        group = "build"
-        dependsOn("reobfJar")
-
         manifest {
             attributes(
                 "Manifest-Version" to 1.0,
@@ -107,6 +98,47 @@ tasks {
             }
         }
 
+        from(
+            provider {
+                configurations["modCore"].map {
+                    if (it.isDirectory) it else zipTree(it)
+                }
+            }
+        )
+
+        exclude {
+            it.name.contains("devfix", true)
+        }
+
+        archiveBaseName.set(rootProject.name)
+        archiveAppendix.set(project.name)
+        archiveClassifier.set("devmod")
+    }
+
+    withType<RenameJarInPlace> {
+        val tempFile = File(buildDir, "tmp/reobfJar/prev.jar")
+
+        val inputFile = jar.get().outputs.files.singleFile
+        val realOutput = File(inputFile.parentFile, inputFile.name.replace("devmod", "remapped"))
+
+        doFirst {
+            Files.copy(inputFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+
+        doLast {
+            Files.move(inputFile.toPath(), realOutput.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            Files.move(tempFile.toPath(), inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+
+    val releaseJar by registering(Jar::class) {
+        group = "build"
+        dependsOn("reobfJar")
+
+        manifest {
+            from(jar.get().manifest)
+        }
+
         val excludeDirs = listOf(
             "META-INF/com.android.tools",
             "META-INF/maven",
@@ -121,8 +153,8 @@ tasks {
         )
 
         from(
-            jar.get().outputs.files.map {
-                if (it.isDirectory) it else zipTree(it)
+            provider {
+                zipTree(File("$buildDir/libs", jar.get().archiveFileName.get().replace("devmod", "remapped")))
             }
         )
 

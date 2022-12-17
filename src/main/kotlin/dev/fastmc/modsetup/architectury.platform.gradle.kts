@@ -23,25 +23,17 @@ loom {
     accessWidenerPath.set(architecturyCommonProject.loom.accessWidenerPath)
 }
 
-val common by configurations.creating
-
 dependencies {
     implementation(architecturyCommonProject.sourceSets.main.get().output)
-    common(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
-    "libraryImplementation"(project(":shared:${javaVersion.javaName}"))
+    "modCore"(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
+    "modCore"(project(":shared:${javaVersion.javaName}"))
 }
 
 tasks {
-    classes {
-        dependsOn(architecturyCommonProject.tasks.classes)
-    }
-
     jar {
-        dependsOn(architecturyCommonProject.tasks["transformProduction${platform.capitalize()}"])
-
         from(
             provider {
-                configurations["common"].map {
+                (configurations["modCore"]).map {
                     if (it.isDirectory) it else zipTree(it)
                 }
             }

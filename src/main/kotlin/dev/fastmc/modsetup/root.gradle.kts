@@ -65,11 +65,21 @@ allprojects {
     val libraryImplementation by configurations.creating
     val libraryApi by configurations.creating
 
+    val modCore by configurations.creating
+    val modCoreOutput by configurations.creating {
+        extendsFrom(modCore)
+    }
+
     dependencies {
         library(libraryImplementation)
         library(libraryApi)
         implementation(libraryImplementation)
         api(libraryApi)
+        libraryImplementation(modCore)
+    }
+
+    artifacts {
+        add("modCoreOutput", tasks.jar)
     }
 }
 
