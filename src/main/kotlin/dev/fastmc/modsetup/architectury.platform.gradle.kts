@@ -22,18 +22,17 @@ architectury {
 loom {
     accessWidenerPath.set(architecturyCommonProject.loom.accessWidenerPath)
 }
-
 dependencies {
     implementation(architecturyCommonProject.sourceSets.main.get().output)
     "modCore"(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
-    "modCore"(project(":shared:${javaVersion.javaName}"))
+    "modCore"(project(architecturyCommonProject.path, "modCore"))
 }
 
 tasks {
     jar {
         from(
             provider {
-                (configurations["modCore"]).map {
+                configurations["modCore"].map {
                     if (it.isDirectory) it else zipTree(it)
                 }
             }
@@ -42,6 +41,16 @@ tasks {
         }
 
         archiveClassifier.set("dev")
+    }
+
+    val devModJar by registering(Jar::class) {
+        from(
+            jar.map { jarTask -> jarTask.archiveFile.map { zipTree(it) } }
+        )
+
+        archiveBaseName.set(rootProject.name)
+        archiveAppendix.set("${project.name}-${minecraftVersion}")
+        archiveClassifier.set("devmod")
     }
 
     remapJar {
@@ -87,6 +96,7 @@ tasks {
         }
 
         artifacts {
+            archives(devModJar)
             archives(releaseJar)
         }
     }

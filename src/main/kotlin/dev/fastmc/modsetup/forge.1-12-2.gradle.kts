@@ -49,7 +49,7 @@ dependencies {
 
     // Dependencies
     compileOnly(project(":shared"))
-    "modCore"(project(":shared:java8", "modCoreOutput"))
+    "modCore"(project(":shared:java8", "modCore"))
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     testAnnotationProcessor("org.spongepowered:mixin:0.8.5:processor")

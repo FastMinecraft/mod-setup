@@ -22,7 +22,7 @@ architectury {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-    implementation(project(":shared:${javaVersion.javaName}"))
+    "modCore"(project(":shared:${javaVersion.javaName}", "modCore"))
 }
 
 afterEvaluate {

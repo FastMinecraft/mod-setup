@@ -10,9 +10,53 @@ plugins {
     idea
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    val kotlinVersion: String by rootProject
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+}
+
 disableTask(tasks.jar)
 
 subprojects {
+    apply {
+        plugin("java")
+        plugin("kotlin")
+    }
+
+    kotlin {
+        val jvmArgs = mutableSetOf<String>()
+        (rootProject.findProperty("kotlin.daemon.jvm.options") as? String)
+            ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
+        System.getProperty("gradle.kotlin.daemon.jvm.options")
+            ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
+        kotlinDaemonJvmArgs = jvmArgs.toList()
+    }
+
+    val library by configurations.creating
+    val libraryImplementation by configurations.creating
+    val libraryApi by configurations.creating
+    val modCore by configurations.creating
+
+    dependencies {
+        library(libraryImplementation)
+        library(libraryApi)
+        implementation(libraryImplementation)
+        api(libraryApi)
+        libraryImplementation(modCore)
+    }
+
+    tasks.register("cleanJars") {
+        group = "build"
+        doLast {
+            File(buildDir, "libs").deleteRecursively()
+            File(buildDir, "devlibs").deleteRecursively()
+        }
+    }
+
     afterEvaluate {
         java {
             toolchain {
@@ -38,48 +82,6 @@ subprojects {
                 }
             }
         }
-    }
-}
-
-allprojects {
-    apply {
-        plugin("java")
-        plugin("kotlin")
-    }
-
-    tasks.register("cleanJars") {
-        group = "build"
-        File(buildDir, "libs").deleteRecursively()
-    }
-
-    kotlin {
-        val jvmArgs = mutableSetOf<String>()
-        (rootProject.findProperty("kotlin.daemon.jvm.options") as? String)
-            ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
-        System.getProperty("gradle.kotlin.daemon.jvm.options")
-            ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
-        kotlinDaemonJvmArgs = jvmArgs.toList()
-    }
-
-    val library by configurations.creating
-    val libraryImplementation by configurations.creating
-    val libraryApi by configurations.creating
-
-    val modCore by configurations.creating
-    val modCoreOutput by configurations.creating {
-        extendsFrom(modCore)
-    }
-
-    dependencies {
-        library(libraryImplementation)
-        library(libraryApi)
-        implementation(libraryImplementation)
-        api(libraryApi)
-        libraryImplementation(modCore)
-    }
-
-    artifacts {
-        add("modCoreOutput", tasks.jar)
     }
 }
 

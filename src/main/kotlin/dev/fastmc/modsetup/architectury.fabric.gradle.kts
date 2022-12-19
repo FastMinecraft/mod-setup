@@ -16,8 +16,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
 }
 
-
-
 afterEvaluate {
     tasks {
         processResources {
