@@ -117,6 +117,7 @@ tasks {
 
     withType<RenameJarInPlace> {
         val tempFile = File(buildDir, "tmp/reobfJar/prev.jar")
+        tempFile.parentFile.mkdirs()
 
         val inputFile = jar.get().outputs.files.singleFile
         val realOutput = File(inputFile.parentFile, inputFile.name.replace("devmod", "remapped"))
