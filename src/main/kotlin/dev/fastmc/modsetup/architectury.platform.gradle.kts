@@ -22,17 +22,22 @@ architectury {
 loom {
     accessWidenerPath.set(architecturyCommonProject.loom.accessWidenerPath)
 }
+
+val common by configurations.creating
+
 dependencies {
     implementation(architecturyCommonProject.sourceSets.main.get().output)
-    "modCore"(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
+    common(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
     "modCore"(project(architecturyCommonProject.path, "modCore"))
 }
 
 tasks {
     jar {
+        dependsOn(architecturyCommonProject.tasks["transformProduction${platform.capitalize()}"])
+
         from(
             provider {
-                configurations["modCore"].map {
+                (configurations["modCore"] + common).map {
                     if (it.isDirectory) it else zipTree(it)
                 }
             }
