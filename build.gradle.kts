@@ -1,10 +1,11 @@
+group = "dev.fastmc"
+version = "1.0-SNAPSHOT"
+
 plugins {
     `kotlin-dsl`
     `maven-publish`
+    id("dev.fastmc.maven-repo").version("1.0.0")
 }
-
-group = "dev.fastmc"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
@@ -17,7 +18,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22")
+    val kotlinVersion: String by project
+
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.0-SNAPSHOT")
     implementation("net.minecraftforge.gradle:ForgeGradle:5.1.58")
