@@ -38,15 +38,24 @@ subprojects {
 
     val library by configurations.creating
     val libraryImplementation by configurations.creating
-    val libraryApi by configurations.creating
-    val modCore by configurations.creating
+
+    sourceSets.configureEach {
+        if (this == sourceSets.test.get()) return@configureEach
+        val newName = if (this == sourceSets.main.get()) "modCore" else "${name}ModCore"
+        val modCore = configurations.create(newName)
+        val modCoreOutput = configurations.create("${newName}Output")
+        modCoreOutput.extendsFrom(modCore)
+        configurations.getByName(implementationConfigurationName).extendsFrom(modCore)
+        project.afterEvaluate {
+            configurations.named(apiElementsConfigurationName).configure {
+                modCoreOutput.artifacts.addAll(artifacts)
+            }
+        }
+    }
 
     dependencies {
         library(libraryImplementation)
-        library(libraryApi)
         implementation(libraryImplementation)
-        api(libraryApi)
-        libraryImplementation(modCore)
     }
 
     tasks.register("cleanJars") {

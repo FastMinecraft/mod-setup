@@ -11,6 +11,7 @@ repositories {
     mavenLocal()
     gradlePluginPortal()
     mavenCentral()
+    maven("https://maven.fastmc.dev/")
     maven("https://maven.fabricmc.net/")
     maven("https://files.minecraftforge.net/maven/")
     maven("https://maven.architectury.dev/")
@@ -20,43 +21,12 @@ repositories {
 dependencies {
     val kotlinVersion: String by project
 
+    implementation("dev.fastmc:multi-jdk:1.1.1")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.0-SNAPSHOT")
     implementation("net.minecraftforge.gradle:ForgeGradle:5.1.58")
     implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
-}
-
-kotlin {
-    val jvmArgs = mutableListOf<String>()
-    """
-        -Xms128M
-        -Xmx512M
-        -XX:+UnlockExperimentalVMOptions
-        -XX:CompileThresholdScaling=0.25
-        -XX:+AlwaysPreTouch
-        -XX:+ParallelRefProcEnabled
-        -XX:+UseG1GC
-        -XX:+UseStringDeduplication
-        -XX:MaxGCPauseMillis=200
-        -XX:G1NewSizePercent=10
-        -XX:G1MaxNewSizePercent=25
-        -XX:G1HeapRegionSize=1M
-        -XX:G1MixedGCCountTarget=4
-        -XX:InitiatingHeapOccupancyPercent=75
-        -XX:G1RSetUpdatingPauseTimePercent=25
-        -XX:MinHeapFreeRatio=5
-        -XX:MaxHeapFreeRatio=10
-        -XX:ParallelGCThreads=4
-        -XX:ConcGCThreads=1
-        -XX:G1PeriodicGCInterval=10000
-    """.trimIndent().lineSequence().filter { it.isNotBlank() }.toCollection(jvmArgs)
-    System.getProperty("use_large_pages")?.let {
-        if (it.equals("t", true) || it.equals("true", true)) {
-            jvmArgs.add("-XX:+UseLargePages")
-        }
-    }
-    kotlinDaemonJvmArgs = jvmArgs
 }
 
 tasks {

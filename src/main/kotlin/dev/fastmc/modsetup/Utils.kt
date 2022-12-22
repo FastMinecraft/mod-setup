@@ -11,6 +11,12 @@ import org.gradle.kotlin.dsl.exclude
 
 private val javaNameRegex = "java(\\d+)".toRegex()
 
+val Project.targetModCoreName
+    get() = "${javaVersion.javaName}ModCore"
+
+val Project.targetModCoreOutputName
+    get() = "${javaVersion.javaName}ModCoreOutput"
+
 val Project.javaVersion: JavaLanguageVersion
     get() {
         var result: JavaLanguageVersion? = null

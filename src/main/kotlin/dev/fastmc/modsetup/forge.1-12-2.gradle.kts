@@ -48,8 +48,8 @@ dependencies {
     "minecraft"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
 
     // Dependencies
-    compileOnly(project(":shared"))
-    "modCore"(project(":shared:java8", "modCore"))
+    compileOnly(project(":shared", "apiElements"))
+    "modCore"(project(":shared", targetModCoreOutputName))
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     testAnnotationProcessor("org.spongepowered:mixin:0.8.5:processor")

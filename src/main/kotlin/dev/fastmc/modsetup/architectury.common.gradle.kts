@@ -22,7 +22,8 @@ architectury {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-    "modCore"(project(":shared:${javaVersion.javaName}", "modCore"))
+    compileOnly(project(":shared", "apiElements"))
+    "modCore"(project(":shared", targetModCoreOutputName))
 }
 
 afterEvaluate {

@@ -1,44 +1,24 @@
 package dev.fastmc.modsetup
 
-plugins {
-    java
-    kotlin("jvm")
+import dev.fastmc.multijdk.MultiJdkExtension
+
+apply {
+    plugin("dev.fastmc.multi-jdk")
 }
 
-val sharedProject = project
-
-subprojects {
-    apply {
-        plugin("java")
-        plugin("kotlin")
-    }
-
-    tasks {
-        processResources {
-            from(sharedProject.sourceSets.main.get().resources)
+configure<MultiJdkExtension> {
+    baseJavaVersion(JavaLanguageVersion.of(8))
+    rootProject.allprojects
+        .map { it.javaVersion }
+        .forEach {
+            newJavaVersion(it)
         }
-        compileJava {
-            source(sharedProject.sourceSets.main.get().java)
-        }
-        compileKotlin {
-            source(sharedProject.sourceSets.main.get().kotlin)
-        }
-        sharedProject.tasks.classes.get().dependsOn(classes)
-
-        jar {
-            archiveBaseName.set(sharedProject.name)
-            archiveClassifier.set(project.name)
-        }
-
-        artifacts {
-            add("modCore", jar)
+    sourceSets.values.forEach {
+        configurations.named(it.implementationConfigurationName) {
+            extendsFrom(configurations.getByName("implementation"))
         }
     }
 }
 
-tasks {
-    disableTask(compileJava)
-    disableTask(compileKotlin)
-    disableTask(processResources)
-    disableTask(jar)
-}
+configurations.getByName("modCore")
+    .extendsFrom(configurations.getByName("java8ModCore"))
