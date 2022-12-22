@@ -22,7 +22,6 @@ architectury {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-    compileOnly(project(":shared", "apiElements"))
     "modCore"(project(":shared", targetModCoreOutputName))
 }
 

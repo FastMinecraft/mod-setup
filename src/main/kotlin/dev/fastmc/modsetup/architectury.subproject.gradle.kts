@@ -21,7 +21,7 @@ apply {
 dependencies {
     "minecraft"("com.mojang:minecraft:$minecraftVersion")
     "mappings"("net.fabricmc:yarn:$yarnMappings")
-    compileOnly(project(":shared"))
+    compileOnly(project(":shared", "apiElements"))
 }
 
 when (name) {
