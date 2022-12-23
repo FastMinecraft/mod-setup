@@ -47,8 +47,8 @@ subprojects {
         modCoreOutput.extendsFrom(modCore)
         configurations.getByName(implementationConfigurationName).extendsFrom(modCore)
         project.afterEvaluate {
-            configurations.named(apiElementsConfigurationName).configure {
-                modCoreOutput.artifacts.addAll(artifacts)
+            configurations.findByName(apiElementsConfigurationName)?.let {
+                modCoreOutput.artifacts.addAll(it.artifacts)
             }
         }
     }
