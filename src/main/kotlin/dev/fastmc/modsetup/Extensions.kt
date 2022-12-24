@@ -11,6 +11,12 @@ abstract class RunVmOptionExtension {
 
     val options: Set<String> get() = options0
 
+    init {
+        if (System.getProperty("use_large_pages") == "true") {
+            options0.add("-XX:+UseLargePages")
+        }
+    }
+
     fun add(vararg options: String) {
         options0.addAll(options)
     }
