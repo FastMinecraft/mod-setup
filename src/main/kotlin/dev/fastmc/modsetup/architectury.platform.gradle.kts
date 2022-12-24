@@ -26,7 +26,7 @@ loom {
 val common by configurations.creating
 
 dependencies {
-    compileOnly(project(architecturyCommonProject.path, "namedElements"))
+    implementation(project(architecturyCommonProject.path, "namedElements"))
     "modCoreRuntime"(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
     "modCore"(project(architecturyCommonProject.path, "modCore"))
 }
