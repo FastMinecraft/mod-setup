@@ -42,9 +42,11 @@ subprojects {
     sourceSets.configureEach {
         if (this == sourceSets.test.get()) return@configureEach
         val newName = if (this == sourceSets.main.get()) "modCore" else "${name}ModCore"
+        val modCoreRuntime = configurations.create("${newName}Runtime")
         val modCore = configurations.create(newName)
         val modCoreOutput = configurations.create("${newName}Output")
-        modCoreOutput.extendsFrom(modCore)
+        modCoreRuntime.extendsFrom(modCore)
+        modCoreOutput.extendsFrom(modCoreRuntime)
         configurations.getByName(implementationConfigurationName).extendsFrom(modCore)
         project.afterEvaluate {
             configurations.findByName(apiElementsConfigurationName)?.let {

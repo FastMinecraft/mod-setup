@@ -18,6 +18,16 @@ repositories {
     maven("https://repo.spongepowered.org/repository/maven-public/")
 }
 
+kotlin {
+    val regex = "\\s+".toRegex()
+    val jvmArgs = mutableSetOf<String>()
+    (rootProject.findProperty("kotlin.daemon.jvm.options") as? String)
+        ?.split(regex)?.toCollection(jvmArgs)
+    System.getProperty("gradle.kotlin.daemon.jvm.options")
+        ?.split(regex)?.toCollection(jvmArgs)
+    kotlinDaemonJvmArgs = jvmArgs.toList()
+}
+
 dependencies {
     val kotlinVersion: String by project
 

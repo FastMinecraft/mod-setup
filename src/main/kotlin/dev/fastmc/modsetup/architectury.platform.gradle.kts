@@ -26,8 +26,8 @@ loom {
 val common by configurations.creating
 
 dependencies {
-    implementation(architecturyCommonProject.sourceSets.main.get().output)
-    common(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
+    compileOnly(project(architecturyCommonProject.path, "namedElements"))
+    "modCoreRuntime"(project(architecturyCommonProject.path, "transformProduction${platform.capitalize()}"))
     "modCore"(project(architecturyCommonProject.path, "modCore"))
 }
 
@@ -37,7 +37,7 @@ tasks {
 
         from(
             provider {
-                (configurations["modCore"] + common).map {
+                configurations["modCoreRuntime"].map {
                     if (it.isDirectory) it else zipTree(it)
                 }
             }

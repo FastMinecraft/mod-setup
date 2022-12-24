@@ -100,7 +100,7 @@ tasks {
 
         from(
             provider {
-                configurations["modCore"].map {
+                configurations["modCoreRuntime"].map {
                     if (it.isDirectory) it else zipTree(it)
                 }
             }
