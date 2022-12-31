@@ -4,6 +4,7 @@ version = "1.0-SNAPSHOT"
 plugins {
     `kotlin-dsl`
     `maven-publish`
+    kotlin("jvm")
     id("dev.fastmc.maven-repo").version("1.0.0")
 }
 
@@ -31,6 +32,7 @@ kotlin {
 dependencies {
     val kotlinVersion: String by project
 
+    implementation(kotlin("stdlib-jdk8", kotlinVersion))
     implementation("dev.fastmc:multi-jdk:1.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
@@ -39,19 +41,19 @@ dependencies {
     implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
 }
 
-tasks {
-    compileJava {
-        options.encoding = "UTF-8"
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
-    }
+afterEvaluate {
+    tasks {
+        compileJava {
+            options.encoding = "UTF-8"
+            sourceCompatibility = "17"
+            targetCompatibility = "17"
+        }
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "17"
-            freeCompilerArgs += listOf(
-                "-Xbackend-threads=0"
-            )
+        compileKotlin {
+            kotlinOptions {
+                jvmTarget = "17"
+                freeCompilerArgs = listOf("-Xbackend-threads=0")
+            }
         }
     }
 }
