@@ -49,6 +49,9 @@ tasks {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "17"
+            freeCompilerArgs += listOf(
+                "-Xbackend-threads=0"
+            )
         }
     }
 }
