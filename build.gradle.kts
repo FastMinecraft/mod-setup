@@ -31,7 +31,7 @@ kotlin {
 dependencies {
     val kotlinVersion: String by project
 
-    implementation("dev.fastmc:multi-jdk:1.1.1")
+    implementation("dev.fastmc:multi-jdk:1.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.0-SNAPSHOT")
