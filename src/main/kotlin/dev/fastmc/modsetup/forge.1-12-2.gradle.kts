@@ -1,9 +1,8 @@
 package dev.fastmc.modsetup
 
+import dev.fastmc.loader.ModPlatform
+import dev.fastmc.remapper.mapping.MappingName
 import net.minecraftforge.gradle.userdev.UserDevExtension
-import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 
 println("[Mod Setup] [architectury.fabric] [${project.displayName}] Configuring forge 1.12.2 project")
 
@@ -17,11 +16,12 @@ val forgeProjectExtension = extensions.create("forgeProject", ForgeProjectExtens
 plugins {
     java
     idea
+    id("dev.fastmc.fast-remapper")
+    id("dev.fastmc.mod-loader-plugin")
 }
 
 apply {
     plugin("net.minecraftforge.gradle")
-    plugin("org.spongepowered.mixin")
 }
 
 idea {
@@ -33,6 +33,8 @@ idea {
 repositories {
     maven("https://repo.spongepowered.org/repository/maven-public/")
 }
+
+val releaseElements by configurations.creating
 
 val forgeVersion: String by project
 val mappingsChannel: String by project
@@ -51,9 +53,6 @@ dependencies {
     compileOnly(project(":shared", "apiElements"))
     "modCore"(project(":shared", targetModCoreOutputName))
 
-    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
-    testAnnotationProcessor("org.spongepowered:mixin:0.8.5:processor")
-
     "libraryImplementation"("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         isTransitive = false
     }
@@ -69,14 +68,25 @@ configure<UserDevExtension> {
     }
 }
 
-tasks {
-    jar {
-        manifest {
-            attributes(
-                "Manifest-Version" to 1.0,
-                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker"
-            )
+fastRemapper {
+    mcVersion(minecraftVersion!!)
+    forge()
+    mapping.set(MappingName.Mcp(mappingsChannel, mappingsVersion.substringBefore('-')))
+    minecraftJar.set {
+        configurations["minecraft"].copy().apply { isTransitive = false }.singleFile
+    }
 
+    mixinConfigs.addAll(forgeProjectExtension.mixinConfigs)
+    remap(tasks.jar)
+}
+
+modLoader {
+    defaultPlatform.set(ModPlatform.FORGE)
+}
+
+afterEvaluate {
+    tasks.jar {
+        manifest {
             forgeProjectExtension.coreModClass.orNull?.let {
                 attributes(
                     "FMLCorePluginContainsFMLMod" to true,
@@ -84,7 +94,7 @@ tasks {
                 )
             }
 
-            val mixinConfigs = forgeProjectExtension.mixinConfigs
+            val mixinConfigs = forgeProjectExtension.mixinConfigs.get()
             if (mixinConfigs.isNotEmpty()) {
                 attributes(
                     "MixinConfigs" to mixinConfigs.joinToString(",")
@@ -97,12 +107,14 @@ tasks {
                 )
             }
         }
+    }
+}
 
+tasks {
+    jar {
         from(
-            provider {
-                configurations["modCoreRuntime"].map {
-                    if (it.isDirectory) it else zipTree(it)
-                }
+            configurations["modCoreRuntime"].elements.map { set ->
+                set.map { it.asFile }.map { if (it.isDirectory) it else zipTree(it) }
             }
         )
 
@@ -115,29 +127,20 @@ tasks {
         archiveClassifier.set("devmod")
     }
 
-    withType<RenameJarInPlace> {
-        val tempFile = File(buildDir, "tmp/reobfJar/prev.jar")
-        tempFile.parentFile.mkdirs()
-
-        val inputFile = jar.get().outputs.files.singleFile
-        val realOutput = File(inputFile.parentFile, inputFile.name.replace("devmod", "remapped"))
-
-        doFirst {
-            Files.copy(inputFile.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    val fatJar by registering(Jar::class) {
+        val fastRemapJar = provider {
+            named<AbstractArchiveTask>("fastRemapJar").get()
         }
+        val fastRemapJarZipTree = fastRemapJar.map { zipTree(it.archiveFile) }
 
-        doLast {
-            Files.move(inputFile.toPath(), realOutput.toPath(), StandardCopyOption.REPLACE_EXISTING)
-            Files.move(tempFile.toPath(), inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
-        }
-    }
-
-    val releaseJar by registering(Jar::class) {
-        group = "build"
-        dependsOn("reobfJar")
+        dependsOn(fastRemapJar)
 
         manifest {
-            from(jar.get().manifest)
+            attributes(
+                "Manifest-Version" to 1.0,
+                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker"
+            )
+            from(fastRemapJarZipTree.map { zipTree -> zipTree.find { it.name == "MANIFEST.MF" }!! })
         }
 
         val excludeDirs = listOf(
@@ -152,41 +155,40 @@ tasks {
             "LICENSE",
             "kotlinx_coroutines_core"
         )
-
-        from(
-            provider {
-                zipTree(File("$buildDir/libs", jar.get().archiveFileName.get().replace("devmod", "remapped")))
-            }
-        )
-
-
-        from(
-            provider {
-                configurations["library"].map {
-                    if (it.isDirectory) it else zipTree(it)
-                }
-            }
-        )
-
         exclude { file ->
             file.name.endsWith("kotlin_module")
                 || excludeNames.contains(file.file.nameWithoutExtension)
                 || excludeDirs.any { file.path.contains(it) }
         }
 
+        from(fastRemapJarZipTree)
+
+        from(
+            configurations["library"].elements.map { set ->
+                set.map { it.asFile }.map { if (it.isDirectory) it else zipTree(it) }
+            }
+        )
+
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
         archiveBaseName.set(rootProject.name)
         archiveAppendix.set(project.name)
+        archiveClassifier.set("fatJar")
+    }
+
+    modLoaderJar {
+        archiveBaseName.set(rootProject.name)
+        archiveAppendix.set(project.minecraftVersion)
         archiveClassifier.set("release")
     }
 
     afterEvaluate {
-        getByName("reobfJar").finalizedBy(releaseJar)
+        disableTask(getByName("reobfJar"))
     }
 
     artifacts {
-        archives(releaseJar)
+        archives(fatJar)
+        add(releaseElements.name, fatJar)
     }
 
     clean {
@@ -197,9 +199,6 @@ tasks {
         delete = set
     }
 }
-
-
-
 
 afterEvaluate {
     tasks {

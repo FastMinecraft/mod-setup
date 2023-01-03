@@ -15,11 +15,16 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion: String by rootProject
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 disableTask(tasks.jar)
+
+allprojects {
+    repositories {
+        maven("https://maven.fastmc.dev/")
+    }
+}
 
 subprojects {
     apply {

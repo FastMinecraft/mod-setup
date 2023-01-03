@@ -23,7 +23,7 @@ loom {
     accessWidenerPath.set(architecturyCommonProject.loom.accessWidenerPath)
 }
 
-val common by configurations.creating
+val releaseElements by configurations.creating
 
 dependencies {
     implementation(project(architecturyCommonProject.path, "namedElements"))
@@ -103,6 +103,7 @@ tasks {
         artifacts {
             archives(devModJar)
             archives(releaseJar)
+            add(releaseElements.name, releaseJar)
         }
     }
 }

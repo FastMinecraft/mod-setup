@@ -4,6 +4,7 @@ import net.minecraftforge.gradle.userdev.UserDevExtension
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.configure
 
 abstract class RunVmOptionExtension {
@@ -42,14 +43,14 @@ val Project.runVmOptions: RunVmOptionExtension
     get() = rootProject.extensions.getByType(RunVmOptionExtension::class.java)
 
 abstract class MixinConfigContainer {
-    internal val mixinConfigs = mutableSetOf<String>()
+    internal abstract val mixinConfigs: SetProperty<String>
 
     fun mixinConfig(config: String) {
         mixinConfigs.add(config)
     }
 
     fun mixinConfig(vararg configs: String) {
-        mixinConfigs.addAll(configs)
+        mixinConfigs.addAll(*configs)
     }
 }
 

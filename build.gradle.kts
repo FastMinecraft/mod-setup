@@ -1,5 +1,5 @@
 group = "dev.fastmc"
-version = "1.0-SNAPSHOT"
+version = "1.1-SNAPSHOT"
 
 plugins {
     `kotlin-dsl`
@@ -32,13 +32,16 @@ kotlin {
 dependencies {
     val kotlinVersion: String by project
 
-    implementation(kotlin("stdlib-jdk8", kotlinVersion))
-    implementation("dev.fastmc:multi-jdk:1.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    implementation(kotlin("stdlib-jdk8", kotlinVersion))
+
+    implementation("dev.fastmc:multi-jdk:1.1-SNAPSHOT")
+    implementation("dev.fastmc:fast-remapper:1.0-SNAPSHOT")
+    implementation("dev.fastmc:mod-loader-plugin:1.0-SNAPSHOT")
+
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.0-SNAPSHOT")
     implementation("net.minecraftforge.gradle:ForgeGradle:5.1.58")
-    implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
 }
 
 afterEvaluate {

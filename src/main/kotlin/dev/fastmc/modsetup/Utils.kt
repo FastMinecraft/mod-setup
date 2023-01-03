@@ -1,6 +1,7 @@
 package dev.fastmc.modsetup
 
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
@@ -67,6 +68,10 @@ val Project.forgeVersion
 
 fun disableTask(it: TaskProvider<*>) {
     it.get().enabled = false
+}
+
+fun disableTask(it: Task) {
+    it.enabled = false
 }
 
 fun ModuleDependency.exclude(moduleName: String): ModuleDependency {
