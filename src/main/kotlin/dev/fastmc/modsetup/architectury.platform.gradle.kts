@@ -35,13 +35,12 @@ dependencies {
 
 tasks {
     jar {
-        dependsOn(architecturyCommonProject.tasks["transformProduction${platform.capitalize()}"])
+        val modCoreRuntime = configurations["modCoreRuntime"]
+        dependsOn(modCoreRuntime)
 
         from(
-            provider {
-                configurations["modCoreRuntime"].map {
-                    if (it.isDirectory) it else zipTree(it)
-                }
+            modCoreRuntime.elements.map { set ->
+                set.map { it.asFile }.map { if (it.isDirectory) it else zipTree(it) }
             }
         ) {
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
