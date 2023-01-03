@@ -16,7 +16,6 @@ repositories {
     maven("https://maven.fabricmc.net/")
     maven("https://files.minecraftforge.net/maven/")
     maven("https://maven.architectury.dev/")
-    maven("https://repo.spongepowered.org/repository/maven-public/")
 }
 
 kotlin {

@@ -20,12 +20,6 @@ dependencies {
 
 disableTask(tasks.jar)
 
-allprojects {
-    repositories {
-        maven("https://maven.fastmc.dev/")
-    }
-}
-
 subprojects {
     apply {
         plugin("java")
