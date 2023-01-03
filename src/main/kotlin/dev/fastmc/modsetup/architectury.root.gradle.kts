@@ -26,6 +26,8 @@ architectury {
     minecraft = minecraftVersion!!
 }
 
+disableTask(tasks.jar)
+
 val architecturyRootProject = project
 val platforms = mutableListOf<String>()
 architecturyRootProject.extra["platforms"] = platforms
