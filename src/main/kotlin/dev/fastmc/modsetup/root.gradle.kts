@@ -60,6 +60,14 @@ subprojects {
         }
     }
 
+    configurations {
+        all {
+            resolutionStrategy {
+                force("dev.architectury:architectury-transformer:5.2.9999")
+            }
+        }
+    }
+
     dependencies {
         library(libraryImplementation)
         implementation(libraryImplementation)
