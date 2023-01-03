@@ -35,6 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
 
+    implementation("dev.luna5ama:jar-optimizer:1.2-SNAPSHOT")
     implementation("dev.fastmc:multi-jdk:1.1-SNAPSHOT")
     implementation("dev.fastmc:fast-remapper:1.0-SNAPSHOT")
     implementation("dev.fastmc:mod-loader-plugin:1.0-SNAPSHOT")

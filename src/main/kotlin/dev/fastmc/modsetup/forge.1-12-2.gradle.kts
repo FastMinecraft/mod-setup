@@ -11,13 +11,14 @@ afterEvaluate {
     version = rootProject.version
 }
 
-val forgeProjectExtension = extensions.create("forgeProject", ForgeProjectExtension::class.java)
+val projectExtension = extensions.create("forgeProject", ForgeProjectExtension::class.java)
 
 plugins {
     java
     idea
     id("dev.fastmc.fast-remapper")
     id("dev.fastmc.mod-loader-plugin")
+    id("dev.luna5ama.jar-optimizer")
 }
 
 apply {
@@ -76,32 +77,28 @@ fastRemapper {
         configurations["minecraft"].copy().apply { isTransitive = false }.singleFile
     }
 
-    mixinConfigs.addAll(forgeProjectExtension.mixinConfigs)
+    mixinConfigs.addAll(projectExtension.mixinConfigs)
     remap(tasks.jar)
-}
-
-modLoader {
-    defaultPlatform.set(ModPlatform.FORGE)
 }
 
 afterEvaluate {
     tasks.jar {
         manifest {
-            forgeProjectExtension.coreModClass.orNull?.let {
+            projectExtension.coreModClass.orNull?.let {
                 attributes(
                     "FMLCorePluginContainsFMLMod" to true,
                     "FMLCorePlugin" to it
                 )
             }
 
-            val mixinConfigs = forgeProjectExtension.mixinConfigs.get()
+            val mixinConfigs = projectExtension.mixinConfigs.get()
             if (mixinConfigs.isNotEmpty()) {
                 attributes(
                     "MixinConfigs" to mixinConfigs.joinToString(",")
                 )
             }
 
-            forgeProjectExtension.accessTransformer?.let {
+            projectExtension.accessTransformer?.let {
                 attributes(
                     "FMLAT" to it
                 )
@@ -127,55 +124,6 @@ tasks {
         archiveClassifier.set("devmod")
     }
 
-    val fatJar by registering(Jar::class) {
-        val fastRemapJar = provider {
-            named<AbstractArchiveTask>("fastRemapJar").get()
-        }
-        val fastRemapJarZipTree = fastRemapJar.map { zipTree(it.archiveFile) }
-
-        dependsOn(fastRemapJar)
-
-        manifest {
-            attributes(
-                "Manifest-Version" to 1.0,
-                "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker"
-            )
-            from(fastRemapJarZipTree.map { zipTree -> zipTree.find { it.name == "MANIFEST.MF" }!! })
-        }
-
-        val excludeDirs = listOf(
-            "META-INF/com.android.tools",
-            "META-INF/maven",
-            "META-INF/proguard",
-            "META-INF/versions"
-        )
-        val excludeNames = hashSetOf(
-            "module-info",
-            "MUMFREY",
-            "LICENSE",
-            "kotlinx_coroutines_core"
-        )
-        exclude { file ->
-            file.name.endsWith("kotlin_module")
-                || excludeNames.contains(file.file.nameWithoutExtension)
-                || excludeDirs.any { file.path.contains(it) }
-        }
-
-        from(fastRemapJarZipTree)
-
-        from(
-            configurations["library"].elements.map { set ->
-                set.map { it.asFile }.map { if (it.isDirectory) it else zipTree(it) }
-            }
-        )
-
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-
-        archiveBaseName.set(rootProject.name)
-        archiveAppendix.set(project.name)
-        archiveClassifier.set("fatJar")
-    }
-
     modLoaderJar {
         archiveBaseName.set(rootProject.name)
         archiveAppendix.set(project.minecraftVersion)
@@ -184,11 +132,6 @@ tasks {
 
     afterEvaluate {
         disableTask(getByName("reobfJar"))
-    }
-
-    artifacts {
-        archives(fatJar)
-        add(releaseElements.name, fatJar)
     }
 
     clean {
@@ -200,7 +143,72 @@ tasks {
     }
 }
 
+val fatJar by tasks.registering(Jar::class) {
+    val fastRemapJar = provider {
+        tasks.named<AbstractArchiveTask>("fastRemapJar").get()
+    }
+    val fastRemapJarZipTree = fastRemapJar.map { zipTree(it.archiveFile) }
+
+    dependsOn(fastRemapJar)
+
+    manifest {
+        attributes(
+            "Manifest-Version" to 1.0,
+            "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker"
+        )
+        from(fastRemapJarZipTree.map { zipTree -> zipTree.find { it.name == "MANIFEST.MF" }!! })
+    }
+
+    val excludeDirs = listOf(
+        "META-INF/com.android.tools",
+        "META-INF/maven",
+        "META-INF/proguard",
+        "META-INF/versions"
+    )
+    val excludeNames = hashSetOf(
+        "module-info",
+        "MUMFREY",
+        "LICENSE",
+        "kotlinx_coroutines_core"
+    )
+    exclude { file ->
+        file.name.endsWith("kotlin_module")
+            || excludeNames.contains(file.file.nameWithoutExtension)
+            || excludeDirs.any { file.path.contains(it) }
+    }
+
+    from(fastRemapJarZipTree)
+
+    from(
+        configurations["library"].elements.map { set ->
+            set.map { it.asFile }.map { if (it.isDirectory) it else zipTree(it) }
+        }
+    )
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    archiveBaseName.set(rootProject.name)
+    archiveAppendix.set(project.name)
+    archiveClassifier.set("fatJar")
+}
+
+jarOptimizer {
+    optimize(fatJar, projectExtension.modPackage.map { listOf(it, "org.spongepowered") })
+}
+
+modLoader {
+    modPackage.set(projectExtension.modPackage)
+    defaultPlatform.set(ModPlatform.FORGE)
+}
+
 afterEvaluate {
+    artifacts {
+        val optimizeFatJar = tasks.getByName("optimizeFatJar")
+        archives(optimizeFatJar)
+        add(releaseElements.name, optimizeFatJar)
+        add(configurations.modLoaderPlatforms.name, optimizeFatJar)
+    }
+
     tasks {
         register<Task>("genRuns") {
             group = "ide"
@@ -215,7 +223,7 @@ afterEvaluate {
                             "-Dmixin.env.disableRefMap=true",
                         )
                     )
-                    forgeProjectExtension.devCoreModClass.orElse(forgeProjectExtension.coreModClass).orNull.let {
+                    projectExtension.devCoreModClass.orElse(projectExtension.coreModClass).orNull.let {
                         vmOptionsList.add("-Dfml.coreMods.load=$it")
                     }
 

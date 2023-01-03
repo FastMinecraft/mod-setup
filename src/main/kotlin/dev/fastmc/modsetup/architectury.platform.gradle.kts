@@ -4,11 +4,13 @@ println("[Mod Setup] [architectury.platform] [${project.displayName}] Configurin
 
 val platform = project.property("loom.platform") as String
 val architecturyCommonProject = project("${project.parent!!.path}:common")
+val projectExtension = project.parent!!.extensions.getByType(ArchitecturyProjectExtension::class.java)
 
 plugins {
+    java
     id("dev.architectury.loom")
     id("architectury-plugin")
-    java
+    id("dev.luna5ama.jar-optimizer")
 }
 
 apply {
@@ -48,7 +50,7 @@ tasks {
         archiveClassifier.set("dev")
     }
 
-    val devModJar by registering(Jar::class) {
+    val devModJar by creating(Jar::class) {
         from(
             jar.map { jarTask -> jarTask.archiveFile.map { zipTree(it) } }
         )
@@ -64,46 +66,42 @@ tasks {
         archiveAppendix.set("${project.name}-${minecraftVersion}")
         archiveClassifier.set("remapped")
     }
+}
 
-    afterEvaluate {
-        val releaseJar by registering(Jar::class) {
-            group = "build"
-            val taskInput = findByName("atPatch") ?: remapJar.get()
-            dependsOn(taskInput)
-            mustRunAfter(taskInput)
+val fatJar by tasks.registering(Jar::class) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-            manifest {
-                from(provider {
-                    zipTree(taskInput.outputs.files.singleFile).find {
-                        it.name == "MANIFEST.MF"
-                    }
-                })
-            }
+    from(configurations["library"].elements.map { set ->
+        set.map { it.asFile }.map { if (it.isDirectory) it else zipTree(it) }
+    }) {
+        exclude("META-INF/**")
+    }
 
-            from(
-                provider {
-                    configurations["library"].map {
-                        if (it.isDirectory) it else zipTree(it)
-                    }
-                }
-            ) {
-                exclude("META-INF/**")
-            }
+    archiveBaseName.set(rootProject.name)
+    archiveAppendix.set("${project.name}-${minecraftVersion}")
+    archiveClassifier.set("farJar")
+}
 
-            from(
-                zipTree(taskInput.outputs.files.singleFile)
-            )
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+afterEvaluate {
+    fatJar.configure {
+        val taskInput = tasks.findByName("atPatch") ?: tasks.remapJar.get()
+        dependsOn(taskInput)
+        mustRunAfter(taskInput)
 
-            archiveBaseName.set(rootProject.name)
-            archiveAppendix.set("${project.name}-${minecraftVersion}")
-            archiveClassifier.set("release")
-        }
+        manifest.from(provider { zipTree(taskInput.outputs.files.singleFile).find { it.name == "MANIFEST.MF" } })
 
-        artifacts {
-            archives(devModJar)
-            archives(releaseJar)
-            add(releaseElements.name, releaseJar)
-        }
+        from(zipTree(taskInput.outputs.files.singleFile))
+    }
+}
+
+jarOptimizer {
+    optimize(fatJar, projectExtension.modPackage.map { listOf(it) })
+}
+
+afterEvaluate {
+    artifacts {
+        archives(tasks.getByName("devModJar"))
+        archives(tasks.getByName("optimizeFatJar"))
+        add(releaseElements.name, tasks.getByName("optimizeFatJar"))
     }
 }

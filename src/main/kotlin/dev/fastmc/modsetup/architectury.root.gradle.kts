@@ -1,6 +1,6 @@
 package dev.fastmc.modsetup
 
-extensions.create("architecturyProject", ArchitecturyProjectExtension::class.java)
+val projectExtension = extensions.create("architecturyProject", ArchitecturyProjectExtension::class.java)
 
 println("[Mod Setup] [architectury] [${project.displayName}] Configuring architectury root")
 
@@ -46,6 +46,10 @@ dependencies {
     paths.forEach {
         modLoaderPlatforms(project(it, "releaseElements"))
     }
+}
+
+modLoader {
+    modPackage.set(projectExtension.modPackage)
 }
 
 subprojects {

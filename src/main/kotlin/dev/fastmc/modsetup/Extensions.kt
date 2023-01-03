@@ -42,8 +42,9 @@ abstract class RunVmOptionExtension {
 val Project.runVmOptions: RunVmOptionExtension
     get() = rootProject.extensions.getByType(RunVmOptionExtension::class.java)
 
-abstract class MixinConfigContainer {
-    internal abstract val mixinConfigs: SetProperty<String>
+abstract class AbstractProjectExtension {
+    abstract val mixinConfigs: SetProperty<String>
+    abstract val modPackage: Property<String>
 
     fun mixinConfig(config: String) {
         mixinConfigs.add(config)
@@ -54,7 +55,7 @@ abstract class MixinConfigContainer {
     }
 }
 
-abstract class ArchitecturyProjectExtension : MixinConfigContainer() {
+abstract class ArchitecturyProjectExtension : AbstractProjectExtension() {
     abstract val accessWidenerPath: RegularFileProperty
     val forge = ArchitecturyForgeExtension()
 
@@ -79,7 +80,7 @@ class ArchitecturyForgeExtension {
     }
 }
 
-abstract class ForgeProjectExtension(private val project: Project) : MixinConfigContainer() {
+abstract class ForgeProjectExtension(private val project: Project) : AbstractProjectExtension() {
     abstract val coreModClass: Property<String>
     abstract val devCoreModClass: Property<String>
 
