@@ -1,5 +1,10 @@
 package dev.fastmc.modsetup
 
+afterEvaluate {
+    group = rootProject.group
+    version = rootProject.version
+}
+
 val projectExtension = extensions.create("architecturyProject", ArchitecturyProjectExtension::class.java)
 
 println("[Mod Setup] [architectury] [${project.displayName}] Configuring architectury root")
