@@ -36,4 +36,4 @@ afterEvaluate {
 }
 
 disableTask(tasks.remapJar)
-disableTask(tasks.prepareRemapJar)
+tasks.findByName("prepareRemapJar")?.enabled = false
