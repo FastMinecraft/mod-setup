@@ -11,7 +11,6 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     gradlePluginPortal()
     mavenCentral()
     maven("https://maven.fastmc.dev/")

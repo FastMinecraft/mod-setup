@@ -10,7 +10,9 @@ class ArchitecturySubprojectConfigure(project: Project) : ProjectConfigure("arch
         }
 
         project.tasks.processResources {
-            expand("version" to rootProject.version)
+            filesMatching(listOf("fabric.mod.json", "*/mods.toml")) {
+                it.expand(mapOf("version" to rootProject.version))
+            }
         }
 
         project.base {

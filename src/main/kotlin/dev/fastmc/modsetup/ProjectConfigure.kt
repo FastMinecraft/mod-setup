@@ -214,12 +214,6 @@ sealed class ProjectConfigure(name: String, val project: Project) {
         return this.create(name, T::class.java, block)
     }
 
-
-    fun AbstractCopyTask.expand(vararg args: Pair<String, Any>) {
-        this.expand(args.toMap())
-    }
-
-
     protected fun AbstractCopyTask.fromConfiguration(name: String) {
         fromConfiguration(project.provider { project.configurations.named(name) }.flatten())
     }
