@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
-import org.gradle.kotlin.dsl.configure
 
 abstract class RunVmOptionExtension {
     private val options0 = mutableSetOf<String>()
@@ -87,8 +86,8 @@ abstract class ForgeProjectExtension(private val project: Project) : AbstractPro
     var accessTransformer: String? = null
         set(value) {
             field = value
-            project.configure<UserDevExtension> {
-                accessTransformer(project.file("src/main/resources/META-INF/$value"))
+            project.extensions.configure(UserDevExtension::class.java) {
+                it.accessTransformer(project.file("src/main/resources/META-INF/$value"))
             }
         }
 }

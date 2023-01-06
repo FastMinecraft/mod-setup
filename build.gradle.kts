@@ -1,8 +1,10 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 group = "dev.fastmc"
 version = "1.1-SNAPSHOT"
 
 plugins {
-    `kotlin-dsl`
+    `java-gradle-plugin`
     `maven-publish`
     kotlin("jvm")
     id("dev.fastmc.maven-repo").version("1.0.0")
@@ -18,19 +20,21 @@ repositories {
     maven("https://maven.architectury.dev/")
 }
 
-kotlin {
-    val regex = "\\s+".toRegex()
-    val jvmArgs = mutableSetOf<String>()
-    (rootProject.findProperty("kotlin.daemon.jvm.options") as? String)
-        ?.split(regex)?.toCollection(jvmArgs)
-    System.getProperty("gradle.kotlin.daemon.jvm.options")
-        ?.split(regex)?.toCollection(jvmArgs)
-    kotlinDaemonJvmArgs = jvmArgs.toList()
+val kotlinVersion: String by project
+
+configurations {
+    all {
+        resolutionStrategy {
+            eachDependency {
+                if (requested.group == "org.jetbrains.kotlin") {
+                    useVersion(kotlinVersion)
+                }
+            }
+        }
+    }
 }
 
 dependencies {
-    val kotlinVersion: String by project
-
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
 
@@ -44,19 +48,43 @@ dependencies {
     implementation("net.minecraftforge.gradle:ForgeGradle:5.1.58")
 }
 
-afterEvaluate {
-    tasks {
-        compileJava {
-            options.encoding = "UTF-8"
-            sourceCompatibility = "17"
-            targetCompatibility = "17"
+gradlePlugin {
+    plugins {
+        create("mod-setup") {
+            id = "dev.fastmc.mod-setup"
+            displayName = "Mod Setup"
+            description = "Gradle plugin for setting up Minecraft mod project"
+            implementationClass = "dev.fastmc.modsetup.ModSetupPlugin"
         }
+    }
+}
 
-        compileKotlin {
-            kotlinOptions {
-                jvmTarget = "17"
-                freeCompilerArgs = listOf("-Xbackend-threads=0")
-            }
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+    withSourcesJar()
+}
+
+kotlin {
+    val regex = "\\s+".toRegex()
+    val jvmArgs = mutableSetOf<String>()
+    (rootProject.findProperty("kotlin.daemon.jvm.options") as? String)
+        ?.split(regex)?.toCollection(jvmArgs)
+    System.getProperty("gradle.kotlin.daemon.jvm.options")
+        ?.split(regex)?.toCollection(jvmArgs)
+    kotlinDaemonJvmArgs = jvmArgs.toList()
+}
+
+tasks {
+    withType(JavaCompile::class.java) {
+        options.encoding = "UTF-8"
+    }
+
+    withType(KotlinCompile::class.java) {
+        kotlinOptions {
+            jvmTarget = "17"
+            freeCompilerArgs = listOf("-Xlambdas=indy", "-Xbackend-threads=0")
         }
     }
 }

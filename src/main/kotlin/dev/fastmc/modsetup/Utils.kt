@@ -8,9 +8,10 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaLauncher
 import org.gradle.jvm.toolchain.JavaToolchainService
-import org.gradle.kotlin.dsl.exclude
 
 private val javaNameRegex = "java(\\d+)".toRegex()
+
+fun containJavaName(s: String) = javaNameRegex.containsMatchIn(s)
 
 val Project.targetModCoreName
     get() = "${javaVersion.javaName}ModCore"
@@ -48,7 +49,7 @@ val JavaLanguageVersion.javaName: String
 
 val Project.launchJavaToolchain: Provider<JavaLauncher>
     get() = (extensions.getByName("javaToolchains") as JavaToolchainService).launcherFor {
-        languageVersion.set(javaVersion)
+        it.languageVersion.set(javaVersion)
     }
 
 private val minecraftVersionRegex = "\\d+\\.\\d+\\.\\d+".toRegex()
@@ -67,13 +68,22 @@ val Project.forgeVersion
 
 
 fun disableTask(it: TaskProvider<*>) {
-    it.get().enabled = false
+    it.configure { it.enabled = false }
 }
 
-fun disableTask(it: Task) {
-    it.enabled = false
+fun disableTask(it: Task?) {
+    it?.enabled = false
 }
 
 fun ModuleDependency.exclude(moduleName: String): ModuleDependency {
-    return exclude(module = moduleName)
+    return exclude(mapOf("module" to moduleName))
+}
+
+fun String.capitalize(): String {
+    return this[0].uppercaseChar() + this.substring(1)
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T, R : Provider<T>> Provider<R>.flatten(): R {
+    return this.flatMap { it } as R
 }

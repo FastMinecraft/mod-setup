@@ -1,59 +1,29 @@
 package dev.fastmc.modsetup
 
-println("[Mod Setup] [architectury.forge] [${project.displayName}] Configuring architectury forge project")
+import org.gradle.api.Project
 
-val thisProject = project
+class ArchitecturyForgeConfigure(project: Project) : ProjectConfigure("architecturyForge", project) {
+    val architecturyRoot = project.parent!!
 
-project.parent!!.afterEvaluate {
-    thisProject.loom.forge.mixinConfigs.addAll(
-        extensions.getByType(ArchitecturyProjectExtension::class.java).mixinConfigs
-    )
-}
-
-plugins {
-    id("dev.architectury.loom")
-    id("architectury-plugin")
-    java
-}
-
-architectury {
-    forge()
-}
-
-loom.forge {
-    convertAccessWideners.set(true)
-}
-
-afterEvaluate {
-    loom.accessWidenerPath.orNull?.let {
-        loom.forge.extraAccessWideners.add(it.asFile.name)
-    }
-}
-
-dependencies {
-    "forge"("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
-}
-
-parent!!.afterEvaluate {
-    val atPatchExtension = extensions.getByType(ArchitecturyProjectExtension::class.java).forge.atPatch
-    val patches = atPatchExtension.patches
-    if (patches.isNotEmpty()) {
-        thisProject.tasks {
-            project.ext["releaseJarInput"] = create("atPatch", AtPatchTask::class.java, patches, remapJar.get())
+    override fun configure() {
+        project.architectury {
+            forge()
         }
-    }
-}
 
-afterEvaluate {
-    tasks {
-        processResources {
-            filesMatching("*/mods.toml") {
-                expand("version" to rootProject.version)
+        project.loom.forge.mixinConfigs.addAll(architecturyRoot.architecturyProject.mixinConfigs)
+
+        project.loom {
+            forge {
+                it.convertAccessWideners.set(true)
             }
         }
 
+        project.dependencies {
+            add("forge", "net.minecraftforge:forge:${project.minecraftVersion}-${project.forgeVersion}")
+        }
+
 //        Forge run is broken in dev env
-//        register<Task>("genRuns") {
+//        project.tasks.register<Task>("genRuns") {
 //            group = "ide"
 //            doLast {
 //                File(rootDir, ".idea/runConfigurations/${project.name}-${minecraftVersion}_runClient.xml").writer()
@@ -106,6 +76,5 @@ afterEvaluate {
 //                file("${rootProject.projectDir.absolutePath}/architectury-${minecraftVersion}/run").mkdir()
 //            }
 //        }
-
     }
 }
