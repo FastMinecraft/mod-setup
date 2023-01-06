@@ -59,7 +59,7 @@ class ArchitecturyPlatformConfigure(project: Project) : ProjectConfigure("archit
                 exclude("META-INF/**")
             }
 
-            manifest.from(project.tasks.jar.outputManifest)
+            manifest.from(project.tasks.remapJar.outputManifest)
 
             archiveClassifier.set("farJar")
         }

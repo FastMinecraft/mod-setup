@@ -143,10 +143,12 @@ sealed class ProjectConfigure(name: String, val project: Project) {
         get() = named<Jar>("modLoaderJar")
 
     protected val Provider<out Jar>.outputManifest
-        get() = this.flatMap { project.provider { project.zipTree(it.archiveFile).find { it.name == "MANIFEST.MF" } } }
+        get() = this.map { project.zipTree(it.archiveFile) }
+            .map { zipTree -> zipTree.find { it.name == "MANIFEST.MF" }!! }
 
     protected val Jar.outputManifest
-        get() = project.provider { project.zipTree(this.archiveFile).find { it.name == "MANIFEST.MF" } }
+        get() = project.provider { project.zipTree(this.archiveFile) }
+            .map { zipTree -> zipTree.find { it.name == "MANIFEST.MF" }!! }
 
     protected inline fun Project.pluginManager(block: PluginManager.() -> Unit) {
         this.pluginManager.apply(block)
