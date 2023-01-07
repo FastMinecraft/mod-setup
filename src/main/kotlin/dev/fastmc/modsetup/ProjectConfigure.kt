@@ -17,10 +17,7 @@ import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.PluginManager
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.AbstractCopyTask
-import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.api.tasks.TaskContainer
-import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.*
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.jvm.tasks.Jar
 import org.gradle.plugins.ide.idea.model.IdeaModel
@@ -132,6 +129,9 @@ sealed class ProjectConfigure(name: String, val project: Project) {
 
     protected val TaskContainer.jar
         get() = named<Jar>("jar")
+
+    protected val TaskContainer.clean
+        get() = named<Delete>("clean")
 
     protected val TaskContainer.remapJar
         get() = named<RemapJarTask>("remapJar")

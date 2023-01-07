@@ -87,6 +87,14 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
             }
         }
 
+        project.tasks.clean {
+            val set = mutableSetOf<Any>()
+            project.buildDir.listFiles()?.filterNotTo(set) {
+                it.name == "fg_cache"
+            }
+           delete = set
+        }
+
         project.tasks.jar {
             fromConfiguration("modCoreRuntime")
 
