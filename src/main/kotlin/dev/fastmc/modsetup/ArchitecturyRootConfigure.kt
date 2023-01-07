@@ -15,7 +15,7 @@ class ArchitecturyRootConfigure(project: Project) : ProjectConfigure("architectu
 
         project.idea {
             module {
-                it.excludeDirs.add(File("run"))
+                it.excludeDirs.add(this@ArchitecturyRootConfigure.project.file("run"))
             }
         }
 
