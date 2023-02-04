@@ -24,6 +24,10 @@ class RootConfigure(project: Project) : ProjectConfigure("root", project) {
             mavenCentral()
         }
 
+        project.tasks.jar {
+            isEnabled = false
+        }
+
         project.subprojects { subproject ->
             subproject.pluginManager {
                 apply("java")
