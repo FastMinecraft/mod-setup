@@ -61,7 +61,7 @@ class ArchitecturyPlatformConfigure(project: Project) : ProjectConfigure("archit
 
             manifest.from(project.tasks.remapJar.outputManifest)
 
-            archiveClassifier.set("farJar")
+            archiveClassifier.set("fatJar")
         }
 
         val optimizeFatJar = project.jarOptimizer.register(fatJar, projectExtension.modPackage.map { listOf(it) })

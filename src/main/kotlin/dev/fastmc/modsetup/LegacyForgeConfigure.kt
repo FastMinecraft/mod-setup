@@ -110,7 +110,7 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
                 it.attributes(
                     "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker"
                 )
-                from(fastRemapJar.outputManifest)
+                it.from(fastRemapJar.outputManifest)
             }
 
             val excludeDirs = setOf(
