@@ -144,6 +144,7 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
         project.modLoader {
             modPackage.set(projectExtension.modPackage)
             defaultPlatform.set(ModPlatform.FORGE)
+            mcVersion.set(project.minecraftVersion)
         }
 
         project.artifacts {

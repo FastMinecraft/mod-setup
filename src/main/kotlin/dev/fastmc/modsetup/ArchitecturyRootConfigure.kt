@@ -52,6 +52,7 @@ class ArchitecturyRootConfigure(project: Project) : ProjectConfigure("architectu
 
         project.modLoader {
             modPackage.set(projectExtension.modPackage)
+            mcVersion.set(project.minecraftVersion)
         }
 
         project.tasks.modLoaderJar {
