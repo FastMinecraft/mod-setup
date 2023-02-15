@@ -40,7 +40,7 @@ dependencies {
     implementation("dev.luna5ama:jar-optimizer:1.2-SNAPSHOT")
     implementation("dev.fastmc:multi-jdk:1.1-SNAPSHOT")
     implementation("dev.fastmc:fast-remapper:1.1-SNAPSHOT")
-    implementation("dev.fastmc:mod-loader-plugin:1.0-SNAPSHOT")
+    implementation("dev.fastmc:mod-loader-plugin:1.1-SNAPSHOT")
 
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.0-SNAPSHOT")
