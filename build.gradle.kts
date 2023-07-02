@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "dev.fastmc"
-version = "1.2-SNAPSHOT"
+version = "1.3-SNAPSHOT"
 
 plugins {
     `java-gradle-plugin`
@@ -11,9 +11,9 @@ plugins {
 }
 
 repositories {
+    maven("https://maven.fastmc.dev/")
     gradlePluginPortal()
     mavenCentral()
-    maven("https://maven.fastmc.dev/")
     maven("https://maven.fabricmc.net/")
     maven("https://files.minecraftforge.net/maven/")
     maven("https://maven.architectury.dev/")
@@ -44,7 +44,7 @@ dependencies {
 
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.0-SNAPSHOT")
-    implementation("net.minecraftforge.gradle:ForgeGradle:5.1.58")
+    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.7")
 }
 
 gradlePlugin {
