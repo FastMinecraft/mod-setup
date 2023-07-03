@@ -4,8 +4,11 @@ import org.gradle.api.Project
 
 class ArchitecturyCommonConfigure(project: Project) : ProjectConfigure("architecturyCommon", project) {
     val architecturyRoot = project.parent!!
+    val projectExtension: ArchitecturyProjectExtension = architecturyRoot.extensions.getByType(ArchitecturyProjectExtension::class.java)
 
     override fun configure() {
+        projectExtension.commonProject0 = project
+
         project.loom {
             accessWidenerPath.set(architecturyRoot.architecturyProject.accessWidenerPath)
         }

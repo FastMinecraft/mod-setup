@@ -55,6 +55,22 @@ abstract class AbstractProjectExtension {
 }
 
 abstract class ArchitecturyProjectExtension : AbstractProjectExtension() {
+    internal lateinit var commonProject0 : Project
+    val commonProject get() = commonProject0
+
+    fun commonProject(block: Project.() -> Unit) {
+        commonProject0.block()
+    }
+
+    internal val platformProjects0 = mutableListOf<Project>()
+    val platformProjects: List<Project> get() = platformProjects0
+
+    fun platformProject(block: Project.() -> Unit) {
+        platformProjects.forEach {
+            it.block()
+        }
+    }
+
     abstract val accessWidenerPath: RegularFileProperty
     val forge = ArchitecturyForgeExtension()
 

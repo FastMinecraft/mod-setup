@@ -9,13 +9,14 @@ import org.gradle.jvm.tasks.Jar
 class ArchitecturyPlatformConfigure(project: Project) : ProjectConfigure("architecturyPlatform", project) {
     val architecturyRootProject: Project = project.parent!!
     val architecturyCommonProject: Project = project.project("${architecturyRootProject.path}:common")
-    val projectExtension: ArchitecturyProjectExtension =
-        architecturyRootProject.extensions.getByType(ArchitecturyProjectExtension::class.java)
+    val projectExtension: ArchitecturyProjectExtension = architecturyRootProject.extensions.getByType(ArchitecturyProjectExtension::class.java)
     val platform = project.property("loom.platform") as String
 
     val releaseElements: NamedDomainObjectProvider<Configuration> = project.configurations.register("releaseElements")
 
     override fun configure() {
+        projectExtension.platformProjects0.add(project)
+
         project.pluginManager {
             apply("dev.luna5ama.jar-optimizer")
         }
