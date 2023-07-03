@@ -210,7 +210,7 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
                                 <option name="VM_PARAMETERS" value="${vmOptionsList.joinToString(" ")}" />
                                 <option name="WORKING_DIRECTORY" value="${runDir.absolutePath}" />
                                 <method v="2">
-                                  <option name="Make" enabled="true" />
+                                  <option name="Gradle.BeforeRunTask" enabled="true" tasks="${project.path}:classes" externalProjectPath="${project.rootDir.absolutePath}" />
                                 </method>
                               </configuration>
                             </component>

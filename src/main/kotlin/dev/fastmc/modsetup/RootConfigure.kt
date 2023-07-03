@@ -146,5 +146,17 @@ class RootConfigure(project: Project) : ProjectConfigure("root", project) {
                 ArchitecturyRootConfigure(it).configure()
             }
         }
+
+        project.tasks.create("clearRuns") { clearRuns ->
+            project.subprojects.forEach {
+                it.tasks.findByName("ideaSyncTask")?.finalizedBy(clearRuns)
+            }
+
+            rootProject.file(".idea/runConfigurations").listFiles()?.forEach {
+                if (it.name.startsWith("Minecraft_Client") || it.name.startsWith("Minecraft_Server")) {
+                    it.delete()
+                }
+            }
+        }
     }
 }

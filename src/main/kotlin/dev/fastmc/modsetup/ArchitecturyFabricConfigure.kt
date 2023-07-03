@@ -8,6 +8,7 @@ class ArchitecturyFabricConfigure(project: Project) : ProjectConfigure("architec
     override fun configure() {
         project.architectury {
             fabric()
+            platformSetupLoomIde()
         }
 
         project.dependencies {
@@ -52,7 +53,7 @@ class ArchitecturyFabricConfigure(project: Project) : ProjectConfigure("architec
                             <option name="VM_PARAMETERS" value="$vmOptions" />
                             <option name="WORKING_DIRECTORY" value="${runDir.absolutePath}" />
                             <method v="2">
-                              <option name="Make" enabled="true" />
+                              <option name="Gradle.BeforeRunTask" enabled="true" tasks="${project.path}:classes" externalProjectPath="${project.rootDir.absolutePath}" />
                             </method>
                           </configuration>
                         </component>
