@@ -75,12 +75,10 @@ class RootConfigure(project: Project) : ProjectConfigure("root", project) {
             library.extendsFrom(libraryImplementation)
             subproject.configurations.getByName("implementation").extendsFrom(library)
 
-            subproject.sourceSets.configureEach { sourceSet ->
-                if (sourceSet.name == "test") return@configureEach
-                val newName = if (sourceSet.name == "main") "modCore" else "${sourceSet.name}ModCore"
-                val modCoreRuntime = subproject.configurations.create("${newName}Runtime")
-                val modCore = subproject.configurations.create(newName)
-                val modCoreOutput = subproject.configurations.create("${newName}Output")
+            subproject.sourceSets.getByName("main").let { sourceSet ->
+                val modCore = subproject.configurations.create("modCore")
+                val modCoreRuntime = subproject.configurations.create("modCoreRuntime")
+                val modCoreOutput = subproject.configurations.create("modCoreOutput")
                 modCoreRuntime.extendsFrom(modCore)
                 modCoreOutput.extendsFrom(modCoreRuntime)
                 subproject.configurations.getByName(sourceSet.implementationConfigurationName).extendsFrom(modCore)

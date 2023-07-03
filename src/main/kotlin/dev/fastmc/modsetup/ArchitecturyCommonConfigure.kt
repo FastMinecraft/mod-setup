@@ -17,7 +17,7 @@ class ArchitecturyCommonConfigure(project: Project) : ProjectConfigure("architec
 
         project.dependencies {
             add("modImplementation", "net.fabricmc:fabric-loader:${project.fabricLoaderVersion}")
-            add("modCore", project(":shared", project.targetModCoreOutputName))
+            add("modCore", project(":shared", "modCoreOutput"))
         }
 
         disableTask(project.tasks.remapJar)

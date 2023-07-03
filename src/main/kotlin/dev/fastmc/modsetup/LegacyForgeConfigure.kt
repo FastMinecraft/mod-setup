@@ -40,7 +40,7 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
         project.dependencies {
             add("minecraft", "net.minecraftforge:forge:${project.minecraftVersion}-$forgeVersion")
             add("compileOnly", project(":shared", "apiElements"))
-            add("modCore", project(":shared", project.targetModCoreOutputName))
+            add("modCore", project(":shared", "modCoreOutput"))
             add("libraryImplementation", "org.spongepowered:mixin:0.7.11-SNAPSHOT") {
                 isTransitive = false
             }
@@ -156,6 +156,9 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
         project.afterEvaluate {
             project.tasks.register<Task>("genRuns") {
                 group = "ide"
+
+                dependsOn("prepareRuns")
+
                 doLast {
                     File(project.rootDir, ".idea/runConfigurations").mkdirs()
                     File(project.rootDir, ".idea/runConfigurations/${project.name}_runClient.xml").writer()
@@ -207,7 +210,7 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
                                 <option name="VM_PARAMETERS" value="${vmOptionsList.joinToString(" ")}" />
                                 <option name="WORKING_DIRECTORY" value="${runDir.absolutePath}" />
                                 <method v="2">
-                                  <option name="Gradle.BeforeRunTask" enabled="true" tasks="${project.name}:prepareRunClient" externalProjectPath="${project.rootDir.absolutePath}" />
+                                  <option name="Make" enabled="true" />
                                 </method>
                               </configuration>
                             </component>

@@ -13,12 +13,6 @@ private val javaNameRegex = "java(\\d+)".toRegex()
 
 fun containJavaName(s: String) = javaNameRegex.containsMatchIn(s)
 
-val Project.targetModCoreName
-    get() = "${javaVersion.javaName}ModCore"
-
-val Project.targetModCoreOutputName
-    get() = "${javaVersion.javaName}ModCoreOutput"
-
 val Project.javaVersion: JavaLanguageVersion
     get() {
         var result: JavaLanguageVersion? = null

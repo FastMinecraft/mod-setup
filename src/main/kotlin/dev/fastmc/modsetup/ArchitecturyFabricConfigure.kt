@@ -17,6 +17,9 @@ class ArchitecturyFabricConfigure(project: Project) : ProjectConfigure("architec
         project.afterEvaluate {
             project.tasks.create<Task>("genRuns") {
                 group = "ide"
+
+                dependsOn("configureClientLaunch")
+
                 doLast {
                     File(project.rootDir, ".idea/runConfigurations").mkdirs()
                     File(
