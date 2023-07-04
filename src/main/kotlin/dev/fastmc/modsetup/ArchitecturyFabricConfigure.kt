@@ -53,7 +53,7 @@ class ArchitecturyFabricConfigure(project: Project) : ProjectConfigure("architec
                             <option name="VM_PARAMETERS" value="$vmOptions" />
                             <option name="WORKING_DIRECTORY" value="${runDir.absolutePath}" />
                             <method v="2">
-                              <option name="Gradle.BeforeRunTask" enabled="true" tasks="${project.path}:classes" externalProjectPath="${project.rootDir.absolutePath}" />
+                              <option name="Gradle.BeforeRunTask" enabled="true" tasks="${project.path}:jar" externalProjectPath="${project.rootDir.absolutePath}" />
                             </method>
                           </configuration>
                         </component>
