@@ -93,8 +93,8 @@ class RootConfigure(project: Project) : ProjectConfigure("root", project) {
                 @Suppress("ObjectLiteralToLambda")
                 it.doLast(object : Action<Task> {
                     override fun execute(t: Task) {
-                        File(subproject.buildDir, "libs").deleteRecursively()
-                        File(subproject.buildDir, "devlibs").deleteRecursively()
+                        File(subproject.layout.buildDirectory.asFile.get(), "libs").deleteRecursively()
+                        File(subproject.layout.buildDirectory.asFile.get(), "devlibs").deleteRecursively()
                     }
                 })
             }

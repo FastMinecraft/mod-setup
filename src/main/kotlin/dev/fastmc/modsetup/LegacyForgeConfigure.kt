@@ -89,7 +89,7 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
 
         project.tasks.clean {
             val set = mutableSetOf<Any>()
-            project.buildDir.listFiles()?.filterNotTo(set) {
+            project.layout.buildDirectory.asFile.get().listFiles()?.filterNotTo(set) {
                 it.name == "fg_cache"
             }
            delete = set
@@ -178,7 +178,7 @@ class LegacyForgeConfigure(project: Project) : ProjectConfigure("legacyForge", p
                             val runDir = File(project.projectDir, "run")
                             runDir.mkdirs()
 
-                            val buildDir = project.buildDir.absolutePath
+                            val buildDir = project.layout.buildDirectory.asFile.get().absolutePath
 
                             writer.write(
                                 """
