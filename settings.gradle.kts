@@ -3,7 +3,7 @@ rootProject.name = "mod-setup"
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven("https://maven.fastmc.dev/")
+        maven("https://maven.luna5ama.dev/")
     }
 
     val kotlinVersion: String by settings
