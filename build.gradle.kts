@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "dev.fastmc"
-version = "1.3.0"
+version = "1.3.1"
 
 plugins {
     `java-gradle-plugin`
@@ -37,13 +37,13 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation(kotlin("stdlib-jdk8", kotlinVersion))
 
-    implementation("dev.luna5ama:jar-optimizer:1.2.0")
-    implementation("dev.fastmc:fast-remapper:1.1.0")
-    implementation("dev.fastmc:mod-loader-plugin:1.1.0")
+    implementation("dev.luna5ama:jar-optimizer:1.2.1")
+    implementation("dev.fastmc:fast-remapper:1.1.1")
+    implementation("dev.fastmc:mod-loader-plugin:1.1.1")
 
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
     implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.2-SNAPSHOT")
-    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.16")
+    implementation("net.minecraftforge.gradle:ForgeGradle:6.0.20")
 }
 
 gradlePlugin {
