@@ -6,7 +6,10 @@ import org.gradle.api.Task
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 
@@ -52,15 +55,6 @@ class RootConfigure(project: Project) : ProjectConfigure("root", project) {
                 }
             }
 
-            subproject.extensions.configure(KotlinJvmProjectExtension::class.java) {
-                val jvmArgs = mutableSetOf<String>()
-                (rootProject.findProperty("kotlin.daemon.jvm.options") as? String)
-                    ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
-                System.getProperty("gradle.kotlin.daemon.jvm.options")
-                    ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
-                it.kotlinDaemonJvmArgs = jvmArgs.toList()
-            }
-
             project.configurations {
                 all { configuration ->
                     configuration.resolutionStrategy {
@@ -99,11 +93,9 @@ class RootConfigure(project: Project) : ProjectConfigure("root", project) {
                 })
             }
 
-            val javaVersion = subproject.javaVersion
-
             subproject.java {
                 toolchain {
-                    it.languageVersion.set(javaVersion)
+                    it.languageVersion.set(JavaLanguageVersion.of(8))
                 }
             }
 
@@ -115,12 +107,17 @@ class RootConfigure(project: Project) : ProjectConfigure("root", project) {
                 it.options.encoding = "UTF-8"
             }
 
-            subproject.tasks.withType(KotlinCompile::class.java) {
-                it.kotlinOptions {
-                    if (!containJavaName(it.name)) {
-                        jvmTarget = javaVersion.fullJavaVersion
-                    }
-                    freeCompilerArgs += listOf("-Xlambdas=indy", "-Xjvm-default=all")
+            val jvmArgs = mutableSetOf<String>()
+            (rootProject.findProperty("kotlin.daemon.jvmargs") as? String)
+                ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
+            System.getenv("KOTLIN_DAEMON_VM")
+                ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
+
+            subproject.kotlinExtension.kotlinDaemonJvmArgs = jvmArgs.toList()
+            subproject.extensions.configure(KotlinJvmProjectExtension::class.java) { kotlinJvmProjectExtension ->
+                kotlinJvmProjectExtension.compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_1_8)
+                    freeCompilerArgs.map { it + listOf("-Xbackend-threads=0", "-Xjvm-default=all") }
                 }
             }
         }

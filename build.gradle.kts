@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "dev.fastmc"
-version = "1.3.1"
+version = "1.3.2"
 
 plugins {
     `java-gradle-plugin`
@@ -42,7 +42,7 @@ dependencies {
     implementation("dev.fastmc:mod-loader-plugin:1.1.1")
 
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4-SNAPSHOT")
-    implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.2-SNAPSHOT")
+    implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.7-SNAPSHOT")
     implementation("net.minecraftforge.gradle:ForgeGradle:6.0.20")
 }
 
@@ -59,30 +59,30 @@ gradlePlugin {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
     withSourcesJar()
 }
 
 kotlin {
-    val regex = "\\s+".toRegex()
     val jvmArgs = mutableSetOf<String>()
-    (rootProject.findProperty("kotlin.daemon.jvm.options") as? String)
-        ?.split(regex)?.toCollection(jvmArgs)
-    System.getProperty("gradle.kotlin.daemon.jvm.options")
-        ?.split(regex)?.toCollection(jvmArgs)
+    (rootProject.findProperty("kotlin.daemon.jvmargs") as? String)
+        ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
+    System.getenv("KOTLIN_DAEMON_VM")
+        ?.split("\\s+".toRegex())?.toCollection(jvmArgs)
+
     kotlinDaemonJvmArgs = jvmArgs.toList()
+
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        freeCompilerArgs = listOf(
+            "-Xbackend-threads=0"
+        )
+    }
 }
 
 tasks {
     withType(JavaCompile::class.java) {
         options.encoding = "UTF-8"
-    }
-
-    withType(KotlinCompile::class.java) {
-        kotlinOptions {
-            jvmTarget = "17"
-            freeCompilerArgs = listOf("-Xlambdas=indy", "-Xbackend-threads=0")
-        }
     }
 }
